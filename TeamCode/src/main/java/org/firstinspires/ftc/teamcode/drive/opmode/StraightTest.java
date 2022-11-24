@@ -8,6 +8,7 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 /*
@@ -16,11 +17,13 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 @Config
 @Autonomous(group = "drive")
 public class StraightTest extends LinearOpMode {
+
+    public final Telemetry dash = FtcDashboard.getInstance().getTelemetry();
     public static double DISTANCE = 60; // in
 
     @Override
     public void runOpMode() throws InterruptedException {
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        //telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
@@ -39,6 +42,10 @@ public class StraightTest extends LinearOpMode {
         telemetry.addData("finalY", poseEstimate.getY());
         telemetry.addData("finalHeading", poseEstimate.getHeading());
         telemetry.update();
+        dash.addData("finalX", poseEstimate.getX());
+        dash.addData("finalY", poseEstimate.getY());
+        dash.addData("finalHeading", poseEstimate.getHeading());
+        dash.update();
 
         while (!isStopRequested() && opModeIsActive()) ;
     }

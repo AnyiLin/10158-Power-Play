@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
@@ -26,6 +27,8 @@ import java.util.Objects;
 @Config
 @Autonomous(group = "drive")
 public class MaxVelocityTuner extends LinearOpMode {
+
+    public final Telemetry dash = FtcDashboard.getInstance().getTelemetry();
     public static double RUNTIME = 2.0;
 
     private ElapsedTime timer;
@@ -41,18 +44,25 @@ public class MaxVelocityTuner extends LinearOpMode {
 
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
 
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        //telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         telemetry.addLine("Your bot will go at full speed for " + RUNTIME + " seconds.");
         telemetry.addLine("Please ensure you have enough space cleared.");
         telemetry.addLine("");
         telemetry.addLine("Press start when ready.");
         telemetry.update();
+        dash.addLine("Your bot will go at full speed for " + RUNTIME + " seconds.");
+        dash.addLine("Please ensure you have enough space cleared.");
+        dash.addLine("");
+        dash.addLine("Press start when ready.");
+        dash.update();
 
         waitForStart();
 
         telemetry.clearAll();
         telemetry.update();
+        dash.clearAll();
+        dash.update();
 
         drive.setDrivePower(new Pose2d(1, 0, 0));
         timer = new ElapsedTime();
@@ -72,6 +82,9 @@ public class MaxVelocityTuner extends LinearOpMode {
         telemetry.addData("Max Velocity", maxVelocity);
         telemetry.addData("Voltage Compensated kF", effectiveKf * batteryVoltageSensor.getVoltage() / 12);
         telemetry.update();
+        dash.addData("Max Velocity", maxVelocity);
+        dash.addData("Voltage Compensated kF", effectiveKf * batteryVoltageSensor.getVoltage() / 12);
+        dash.update();
 
         while (!isStopRequested() && opModeIsActive()) idle();
     }

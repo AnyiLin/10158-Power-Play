@@ -9,9 +9,11 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.MovingStatistics;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.internal.system.Misc;
 import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.drive.StandardTrackingWheelLocalizer;
 
 /*
  * This routine determines the effective track width. The procedure works by executing a point turn
@@ -25,13 +27,15 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 @Config
 @Autonomous(group = "drive")
 public class TrackWidthTuner extends LinearOpMode {
+
+    public final Telemetry dash = FtcDashboard.getInstance().getTelemetry();
     public static double ANGLE = 180; // deg
     public static int NUM_TRIALS = 5;
     public static int DELAY = 1000; // ms
 
     @Override
     public void runOpMode() throws InterruptedException {
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        //telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         // TODO: if you haven't already, set the localizer to something that doesn't depend on
@@ -40,6 +44,9 @@ public class TrackWidthTuner extends LinearOpMode {
         telemetry.addLine("Press play to begin the track width tuner routine");
         telemetry.addLine("Make sure your robot has enough clearance to turn smoothly");
         telemetry.update();
+        dash.addLine("Press play to begin the track width tuner routine");
+        dash.addLine("Make sure your robot has enough clearance to turn smoothly");
+        dash.update();
 
         waitForStart();
 
@@ -48,6 +55,9 @@ public class TrackWidthTuner extends LinearOpMode {
         telemetry.clearAll();
         telemetry.addLine("Running...");
         telemetry.update();
+        dash.clearAll();
+        dash.addLine("Running...");
+        dash.update();
 
         MovingStatistics trackWidthStats = new MovingStatistics(NUM_TRIALS);
         for (int i = 0; i < NUM_TRIALS; i++) {
@@ -79,6 +89,12 @@ public class TrackWidthTuner extends LinearOpMode {
                 trackWidthStats.getMean(),
                 trackWidthStats.getStandardDeviation() / Math.sqrt(NUM_TRIALS)));
         telemetry.update();
+        dash.clearAll();
+        dash.addLine("Tuning complete");
+        dash.addLine(Misc.formatInvariant("Effective track width = %.2f (SE = %.3f)",
+                trackWidthStats.getMean(),
+                trackWidthStats.getStandardDeviation() / Math.sqrt(NUM_TRIALS)));
+        dash.update();
 
         while (!isStopRequested()) {
             idle();

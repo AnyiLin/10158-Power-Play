@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 import java.util.Objects;
@@ -24,6 +25,8 @@ import java.util.Objects;
 @Config
 @Autonomous(group = "drive")
 public class MaxAngularVeloTuner extends LinearOpMode {
+
+    public final Telemetry dash = FtcDashboard.getInstance().getTelemetry();
     public static double RUNTIME = 4.0;
 
     private ElapsedTime timer;
@@ -35,18 +38,25 @@ public class MaxAngularVeloTuner extends LinearOpMode {
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        //telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         telemetry.addLine("Your bot will turn at full speed for " + RUNTIME + " seconds.");
         telemetry.addLine("Please ensure you have enough space cleared.");
         telemetry.addLine("");
         telemetry.addLine("Press start when ready.");
         telemetry.update();
+        dash.addLine("Your bot will turn at full speed for " + RUNTIME + " seconds.");
+        dash.addLine("Please ensure you have enough space cleared.");
+        dash.addLine("");
+        dash.addLine("Press start when ready.");
+        dash.update();
 
         waitForStart();
 
         telemetry.clearAll();
         telemetry.update();
+        dash.clearAll();
+        dash.update();
 
         drive.setDrivePower(new Pose2d(0, 0, 1));
         timer = new ElapsedTime();
@@ -64,6 +74,9 @@ public class MaxAngularVeloTuner extends LinearOpMode {
         telemetry.addData("Max Angular Velocity (rad)", maxAngVelocity);
         telemetry.addData("Max Angular Velocity (deg)", Math.toDegrees(maxAngVelocity));
         telemetry.update();
+        dash.addData("Max Angular Velocity (rad)", maxAngVelocity);
+        dash.addData("Max Angular Velocity (deg)", Math.toDegrees(maxAngVelocity));
+        dash.update();
 
         while (!isStopRequested()) idle();
     }

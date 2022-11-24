@@ -11,8 +11,11 @@ import com.acmerobotics.roadrunner.profile.MotionState;
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.RobotLog;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.internal.opmode.TelemetryImpl;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 import java.util.Objects;
@@ -42,9 +45,12 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
 @Config
 @Autonomous(group = "drive")
 public class ManualFeedforwardTuner extends LinearOpMode {
-    public static double DISTANCE = 72; // in
+
+    public static double DISTANCE = 50; // in
 
     private FtcDashboard dashboard = FtcDashboard.getInstance();
+
+    public final Telemetry dash = dashboard.getTelemetry();
 
     private SampleMecanumDrive drive;
 
@@ -68,7 +74,7 @@ public class ManualFeedforwardTuner extends LinearOpMode {
                     "when using the built-in drive motor velocity PID.");
         }
 
-        telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
+        //telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 
         drive = new SampleMecanumDrive(hardwareMap);
 
@@ -79,6 +85,9 @@ public class ManualFeedforwardTuner extends LinearOpMode {
         telemetry.addLine("Ready!");
         telemetry.update();
         telemetry.clearAll();
+        dash.addLine("Ready!");
+        dash.update();
+        dash.clearAll();
 
         waitForStart();
 
@@ -91,6 +100,7 @@ public class ManualFeedforwardTuner extends LinearOpMode {
 
         while (!isStopRequested()) {
             telemetry.addData("mode", mode);
+            dash.addData("mode", mode);
 
             switch (mode) {
                 case TUNING_MODE:
@@ -121,6 +131,9 @@ public class ManualFeedforwardTuner extends LinearOpMode {
                     telemetry.addData("targetVelocity", motionState.getV());
                     telemetry.addData("measuredVelocity", currentVelo);
                     telemetry.addData("error", motionState.getV() - currentVelo);
+                    dash.addData("targetVelocity", motionState.getV());
+                    dash.addData("measuredVelocity", currentVelo);
+                    dash.addData("error", motionState.getV() - currentVelo);
                     break;
                 case DRIVER_MODE:
                     if (gamepad1.b) {
@@ -141,6 +154,7 @@ public class ManualFeedforwardTuner extends LinearOpMode {
             }
 
             telemetry.update();
+            dash.update();
         }
     }
 }

@@ -42,16 +42,20 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 @Config
 @TeleOp(group = "drive")
 public class MotorDirectionDebugger extends LinearOpMode {
+
+    public final Telemetry dash = FtcDashboard.getInstance().getTelemetry();
     public static double MOTOR_POWER = 0.7;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        //telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         telemetry.addLine("Press play to begin the debugging opmode");
         telemetry.update();
+        dash.addLine("Press play to begin the debugging opmode");
+        dash.update();
 
         waitForStart();
 
@@ -59,6 +63,8 @@ public class MotorDirectionDebugger extends LinearOpMode {
 
         telemetry.clearAll();
         telemetry.setDisplayFormat(Telemetry.DisplayFormat.HTML);
+        dash.clearAll();
+        dash.setDisplayFormat(Telemetry.DisplayFormat.HTML);
 
         while (!isStopRequested()) {
             telemetry.addLine("Press each button to turn on its respective motor");
@@ -69,25 +75,39 @@ public class MotorDirectionDebugger extends LinearOpMode {
             telemetry.addLine("<font face=\"monospace\">&nbsp;&nbsp;B / O&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Rear&nbsp;&nbsp;Right</font>");
             telemetry.addLine("<font face=\"monospace\">&nbsp;&nbsp;A / X&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Rear&nbsp;&nbsp;Left</font>");
             telemetry.addLine();
+            dash.addLine("Press each button to turn on its respective motor");
+            dash.addLine();
+            dash.addLine("<font face=\"monospace\">Xbox/PS4 Button - Motor</font>");
+            dash.addLine("<font face=\"monospace\">&nbsp;&nbsp;X / ▢&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Front Left</font>");
+            dash.addLine("<font face=\"monospace\">&nbsp;&nbsp;Y / Δ&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Front Right</font>");
+            dash.addLine("<font face=\"monospace\">&nbsp;&nbsp;B / O&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Rear&nbsp;&nbsp;Right</font>");
+            dash.addLine("<font face=\"monospace\">&nbsp;&nbsp;A / X&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Rear&nbsp;&nbsp;Left</font>");
+            dash.addLine();
 
             if(gamepad1.x) {
                 drive.setMotorPowers(MOTOR_POWER, 0, 0, 0);
                 telemetry.addLine("Running Motor: Front Left");
+                dash.addLine("Running Motor: Front Left");
             } else if(gamepad1.y) {
                 drive.setMotorPowers(0, 0, 0, MOTOR_POWER);
                 telemetry.addLine("Running Motor: Front Right");
+                dash.addLine("Running Motor: Front Right");
             } else if(gamepad1.b) {
                 drive.setMotorPowers(0, 0, MOTOR_POWER, 0);
                 telemetry.addLine("Running Motor: Rear Right");
+                dash.addLine("Running Motor: Rear Right");
             } else if(gamepad1.a) {
                 drive.setMotorPowers(0, MOTOR_POWER, 0, 0);
                 telemetry.addLine("Running Motor: Rear Left");
+                dash.addLine("Running Motor: Rear Left");
             } else {
                 drive.setMotorPowers(0, 0, 0, 0);
                 telemetry.addLine("Running Motor: None");
+                dash.addLine("Running Motor: None");
             }
 
             telemetry.update();
+            dash.update();
         }
     }
 }

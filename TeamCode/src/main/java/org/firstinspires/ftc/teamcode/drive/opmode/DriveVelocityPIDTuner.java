@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.RobotLog;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 import java.util.List;
@@ -50,6 +51,8 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
 @Config
 @Autonomous(group = "drive")
 public class DriveVelocityPIDTuner extends LinearOpMode {
+
+    public final Telemetry dash = FtcDashboard.getInstance().getTelemetry();
     public static double DISTANCE = 72; // in
 
     enum Mode {
@@ -70,7 +73,7 @@ public class DriveVelocityPIDTuner extends LinearOpMode {
                     "PID is not in use", getClass().getSimpleName());
         }
 
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        //telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
@@ -88,6 +91,9 @@ public class DriveVelocityPIDTuner extends LinearOpMode {
         telemetry.addLine("Ready!");
         telemetry.update();
         telemetry.clearAll();
+        dash.addLine("Ready!");
+        dash.update();
+        dash.clearAll();
 
         waitForStart();
 
@@ -100,6 +106,7 @@ public class DriveVelocityPIDTuner extends LinearOpMode {
 
         while (!isStopRequested()) {
             telemetry.addData("mode", mode);
+            dash.addData("mode", mode);
 
             switch (mode) {
                 case TUNING_MODE:
@@ -126,9 +133,15 @@ public class DriveVelocityPIDTuner extends LinearOpMode {
 
                     // update telemetry
                     telemetry.addData("targetVelocity", motionState.getV());
+                    dash.addData("targetVelocity", motionState.getV());
                     for (int i = 0; i < velocities.size(); i++) {
                         telemetry.addData("measuredVelocity" + i, velocities.get(i));
                         telemetry.addData(
+                                "error" + i,
+                                motionState.getV() - velocities.get(i)
+                        );
+                        dash.addData("measuredVelocity" + i, velocities.get(i));
+                        dash.addData(
                                 "error" + i,
                                 motionState.getV() - velocities.get(i)
                         );
@@ -165,6 +178,7 @@ public class DriveVelocityPIDTuner extends LinearOpMode {
             }
 
             telemetry.update();
+            dash.update();
         }
     }
 }

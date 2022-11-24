@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.RobotLog;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.internal.system.Misc;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.LoggingUtil;
@@ -34,8 +35,10 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.rpmToVelocity;
 @Config
 @Autonomous(group = "drive")
 public class AutomaticFeedforwardTuner extends LinearOpMode {
+
+    public final Telemetry dash = FtcDashboard.getInstance().getTelemetry();
     public static double MAX_POWER = 0.7;
-    public static double DISTANCE = 100; // in
+    public static double DISTANCE = 50; // in
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -44,7 +47,7 @@ public class AutomaticFeedforwardTuner extends LinearOpMode {
                     "when using the built-in drive motor velocity PID.");
         }
 
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        //telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
@@ -52,6 +55,8 @@ public class AutomaticFeedforwardTuner extends LinearOpMode {
 
         telemetry.addLine("Press play to begin the feedforward tuning routine");
         telemetry.update();
+        dash.addLine("Press play to begin the feedforward tuning routine");
+        dash.update();
 
         waitForStart();
 
@@ -61,6 +66,10 @@ public class AutomaticFeedforwardTuner extends LinearOpMode {
         telemetry.addLine("Would you like to fit kStatic?");
         telemetry.addLine("Press (Y/Δ) for yes, (B/O) for no");
         telemetry.update();
+        dash.clearAll();
+        dash.addLine("Would you like to fit kStatic?");
+        dash.addLine("Press (Y/Δ) for yes, (B/O) for no");
+        dash.update();
 
         boolean fitIntercept = false;
         while (!isStopRequested()) {
@@ -84,6 +93,11 @@ public class AutomaticFeedforwardTuner extends LinearOpMode {
                 "Place your robot on the field with at least %.2f in of room in front", DISTANCE));
         telemetry.addLine("Press (Y/Δ) to begin");
         telemetry.update();
+        dash.clearAll();
+        dash.addLine(Misc.formatInvariant(
+                "Place your robot on the field with at least %.2f in of room in front", DISTANCE));
+        dash.addLine("Press (Y/Δ) to begin");
+        dash.update();
 
         while (!isStopRequested() && !gamepad1.y) {
             idle();
@@ -95,6 +109,9 @@ public class AutomaticFeedforwardTuner extends LinearOpMode {
         telemetry.clearAll();
         telemetry.addLine("Running...");
         telemetry.update();
+        dash.clearAll();
+        dash.addLine("Running...");
+        dash.update();
 
         double maxVel = rpmToVelocity(MAX_RPM);
         double finalVel = MAX_POWER * maxVel;
@@ -132,16 +149,25 @@ public class AutomaticFeedforwardTuner extends LinearOpMode {
 
         telemetry.clearAll();
         telemetry.addLine("Quasi-static ramp up test complete");
+        dash.clearAll();
+        dash.addLine("Quasi-static ramp up test complete");
         if (fitIntercept) {
             telemetry.addLine(Misc.formatInvariant("kV = %.5f, kStatic = %.5f (R^2 = %.2f)",
                     rampResult.kV, rampResult.kStatic, rampResult.rSquare));
+            dash.addLine(Misc.formatInvariant("kV = %.5f, kStatic = %.5f (R^2 = %.2f)",
+                    rampResult.kV, rampResult.kStatic, rampResult.rSquare));
         } else {
             telemetry.addLine(Misc.formatInvariant("kV = %.5f (R^2 = %.2f)",
+                    rampResult.kStatic, rampResult.rSquare));
+            dash.addLine(Misc.formatInvariant("kV = %.5f (R^2 = %.2f)",
                     rampResult.kStatic, rampResult.rSquare));
         }
         telemetry.addLine("Would you like to fit kA?");
         telemetry.addLine("Press (Y/Δ) for yes, (B/O) for no");
         telemetry.update();
+        dash.addLine("Would you like to fit kA?");
+        dash.addLine("Press (Y/Δ) for yes, (B/O) for no");
+        dash.update();
 
         boolean fitAccelFF = false;
         while (!isStopRequested()) {
@@ -165,6 +191,10 @@ public class AutomaticFeedforwardTuner extends LinearOpMode {
             telemetry.addLine("Place the robot back in its starting position");
             telemetry.addLine("Press (Y/Δ) to continue");
             telemetry.update();
+            dash.clearAll();
+            dash.addLine("Place the robot back in its starting position");
+            dash.addLine("Press (Y/Δ) to continue");
+            dash.update();
 
             while (!isStopRequested() && !gamepad1.y) {
                 idle();
@@ -176,6 +206,9 @@ public class AutomaticFeedforwardTuner extends LinearOpMode {
             telemetry.clearAll();
             telemetry.addLine("Running...");
             telemetry.update();
+            dash.clearAll();
+            dash.addLine("Running...");
+            dash.update();
 
             double maxPowerTime = DISTANCE / maxVel;
 
@@ -211,6 +244,11 @@ public class AutomaticFeedforwardTuner extends LinearOpMode {
             telemetry.addLine(Misc.formatInvariant("kA = %.5f (R^2 = %.2f)",
                     accelResult.kA, accelResult.rSquare));
             telemetry.update();
+            dash.clearAll();
+            telemetry.addLine("Constant power test complete");
+            dash.addLine(Misc.formatInvariant("kA = %.5f (R^2 = %.2f)",
+                    accelResult.kA, accelResult.rSquare));
+            dash.update();
         }
 
         while (!isStopRequested()) {

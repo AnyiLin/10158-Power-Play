@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.util.Angle;
@@ -7,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.RobotLog;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.drive.StandardTrackingWheelLocalizer;
 
@@ -64,6 +66,8 @@ import org.firstinspires.ftc.teamcode.drive.StandardTrackingWheelLocalizer;
 @Config
 @TeleOp(group = "drive")
 public class TrackingWheelLateralDistanceTuner extends LinearOpMode {
+
+    public final Telemetry dash = FtcDashboard.getInstance().getTelemetry();
     public static int NUM_TURNS = 10;
 
     @Override
@@ -82,6 +86,12 @@ public class TrackingWheelLateralDistanceTuner extends LinearOpMode {
         telemetry.addLine("");
         telemetry.addLine("Press Y/△ to stop the routine.");
         telemetry.update();
+        dash.addLine("Prior to beginning the routine, please read the directions "
+                + "located in the comments of the opmode file.");
+        dash.addLine("Press play to begin the tuning routine.");
+        dash.addLine("");
+        dash.addLine("Press Y/△ to stop the routine.");
+        dash.update();
 
         waitForStart();
 
@@ -89,6 +99,8 @@ public class TrackingWheelLateralDistanceTuner extends LinearOpMode {
 
         telemetry.clearAll();
         telemetry.update();
+        dash.clearAll();
+        dash.update();
 
         double headingAccumulator = 0;
         double lastHeading = 0;
@@ -113,6 +125,12 @@ public class TrackingWheelLateralDistanceTuner extends LinearOpMode {
             telemetry.addLine();
             telemetry.addLine("Press Y/△ to conclude routine");
             telemetry.update();
+            dash.clearAll();
+            dash.addLine("Total Heading (deg): " + Math.toDegrees(headingAccumulator));
+            dash.addLine("Raw Heading (deg): " + Math.toDegrees(heading));
+            dash.addLine();
+            dash.addLine("Press Y/△ to conclude routine");
+            dash.update();
 
             if (gamepad1.y)
                 tuningFinished = true;
@@ -124,6 +142,12 @@ public class TrackingWheelLateralDistanceTuner extends LinearOpMode {
                 (headingAccumulator / (NUM_TURNS * Math.PI * 2)) * StandardTrackingWheelLocalizer.LATERAL_DISTANCE);
 
         telemetry.update();
+        dash.clearAll();
+        dash.addLine("Localizer's total heading: " + Math.toDegrees(headingAccumulator) + "°");
+        dash.addLine("Effective LATERAL_DISTANCE: " +
+                (headingAccumulator / (NUM_TURNS * Math.PI * 2)) * StandardTrackingWheelLocalizer.LATERAL_DISTANCE);
+
+        dash.update();
 
         while (!isStopRequested()) idle();
     }
