@@ -117,6 +117,7 @@ public class Encoder {
      * @return corrected velocity
      */
     public double getCorrectedVelocity() {
+        getCurrentPosition();
         double median = velocityEstimates[0] > velocityEstimates[1]
                 ? Math.max(velocityEstimates[1], Math.min(velocityEstimates[0], velocityEstimates[2]))
                 : Math.max(velocityEstimates[0], Math.min(velocityEstimates[1], velocityEstimates[2]));
