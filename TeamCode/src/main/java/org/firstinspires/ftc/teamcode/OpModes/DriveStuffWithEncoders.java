@@ -3,19 +3,22 @@ package org.firstinspires.ftc.teamcode.OpModes;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp (name = "Single Person Drive", group = "Drive")
 public class DriveStuffWithEncoders extends LinearOpMode {
 
-    private DcMotor leftFront, leftRear, rightFront, rightRear, strafeEncoder, leftLift, rightLift, arm, liftMotor;
+    private DcMotorEx leftFront, leftRear, rightFront, rightRear, strafeEncoder, leftLift, rightLift, arm, liftMotor;
 
     private final String setLiftMotor = "leftLift";
 
     private boolean clawButtonPressed, rotateButtonPressed, liftInMotion;
 
     private Servo rotate, claw;
+
+    private int lastLiftPosition;
 
     private final double ROTATE_UPSIDE = 1, ROTATE_DOWNSIDE = -1, CLAW_OPEN = 0.65, CLAW_CLOSE = 0;
 
@@ -41,14 +44,14 @@ public class DriveStuffWithEncoders extends LinearOpMode {
     @Override
     public void runOpMode()
     {
-        leftFront = hardwareMap.dcMotor.get("leftFront");
-        leftRear = hardwareMap.dcMotor.get("leftRear");
-        rightRear = hardwareMap.dcMotor.get("rightRear");
-        rightFront = hardwareMap.dcMotor.get("rightFront");
-        leftLift = hardwareMap.dcMotor.get("leftLift");
-        rightLift = hardwareMap.dcMotor.get("rightLift");
-        strafeEncoder = hardwareMap.dcMotor.get("strafeEncoder");
-        arm = hardwareMap.dcMotor.get("arm");
+        leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
+        leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
+        rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
+        rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
+        leftLift = hardwareMap.get(DcMotorEx.class, "leftLift");
+        rightLift = hardwareMap.get(DcMotorEx.class, "rightLift");
+        strafeEncoder = hardwareMap.get(DcMotorEx.class, "strafeEncoder");
+        arm = hardwareMap.get(DcMotorEx.class, "arm");
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -144,10 +147,16 @@ public class DriveStuffWithEncoders extends LinearOpMode {
 
                 if ((leftLift.getPower()>0&&liftMotor.getCurrentPosition()>3100)||(leftLift.getPower()<0&&liftMotor.getCurrentPosition()<0)) {
                     leftLift.setPower(0);
-                    rightLift.setPower(0);
                 } else {
-                    leftLift.setPower(-gamepad1.right_stick_y);
-                    rightLift.setPower(-gamepad1.right_stick_y);
+                    if (gamepad1.right_stick_y!=0) {
+                        leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                        leftLift.setPower(-gamepad1.right_stick_y);
+                        lastLiftPosition = leftLift.getCurrentPosition();
+                    } else {
+                        leftLift.setTargetPosition(lastLiftPosition);
+                        leftLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        leftLift.setVelocity(1440 * 2);
+                    }
                 }
 
                 if (gamepad1.dpad_up)
@@ -202,8 +211,8 @@ public class DriveStuffWithEncoders extends LinearOpMode {
         }
     }
 
-    public void liftToPositionAndFlip(int liftPosition, int armPosition, double rotatePosition)
-    {
+    public void liftToPositionAndFlip(int liftPosition, int armPosition, double rotatePosition) {
+        /*
         double liftPower = 1;
         double armPower = 0.4;
         long startTime = System.currentTimeMillis();
@@ -277,6 +286,42 @@ public class DriveStuffWithEncoders extends LinearOpMode {
         leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         liftInMotion = false;
+         */
+        int liftVelocity = 1440*2;
+        int armVelocity = (int)(1440 * 0.65);
+        long startTime = System.currentTimeMillis();
+        long timeOut = 2500;
+        leftLift.setTargetPosition(liftPosition);
+        leftLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftLift.setVelocity(liftVelocity);
+        arm.setTargetPosition(armPosition);
+        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        arm.setVelocity(armVelocity);
+        rotate.setPosition(rotatePosition);
+        while(arm.isBusy())
+        {
+            if (System.currentTimeMillis()-startTime>timeOut)
+            {
+                break;
+            }
+            if (!leftLift.isBusy())
+            {
+                leftLift.setPower(0);
+            }
+        }
+        arm.setPower(0);
+        while(leftLift.isBusy())
+        {
+            if (System.currentTimeMillis()-startTime>timeOut)
+            {
+                break;
+            }
+        }
+        leftLift.setPower(0);
+        leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        liftInMotion = false;
+        lastLiftPosition = leftLift.getCurrentPosition();
     }
 
     public void doClaw() {
