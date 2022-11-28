@@ -68,49 +68,46 @@ public class TallPoleParkRightIMU extends LinearOpMode {
         sleep(50);
         arm.setPower(0);
         strafe(BACKWARD, 0.8, 2750); // runs forward about 2 tiles
-        sleep(200);
+        tallPoleHeading.correctError(1,2000); // turns to pole
 
-        tallPoleHeading.correctError(1,3000); // turns to pole
         liftToPositionAndFlip(TALL, ARM_FLIPPED-200, ROTATE_DOWNSIDE); // flips up
-        sleep(200);
-        strafe(BACKWARD,0.3,300); // goes back to pole
+        strafe(BACKWARD,0.3,100); // goes back to pole
         arm.setPower(0.3); // lowers arm on pole
-        sleep(200);
+        sleep(400);
         arm.setPower(0);
         claw.setPosition(CLAW_OPEN); // releases cone
-        sleep(500);
-        strafe(FORWARD,0.3,300); // goes back to center of tile
+        arm.setPower(-0.4);
+        strafe(FORWARD,0.3,100); // goes back to center of tile
+        arm.setPower(0);
         claw.setPosition(CLAW_CLOSE); // closes claw to avoid any wire issues
-        sleep(500);
         liftToPositionAndFlip(50, 50, ROTATE_UPSIDE); // returns lift to lowered position
-/*
-        strafe(BACKWARD,0.4,300);
-        coneStackHeading.correctError(1,3500); // face towards cone stack
+
+        strafe(FORWARD,0.4,300); // goes forward a bit to adjust for cone stack
+        coneStackHeading.correctError(1,3000); // face towards cone stack
         claw.setPosition(CLAW_OPEN); // open claw
-        strafe(FORWARD,0.7,1000); // move forward to stack
+        strafe(FORWARD,0.7,1200); // move forward to stack
         liftToPositionAndFlip(CONE_STACK,50,ROTATE_UPSIDE); // lift lift to cone stack height
-        strafe(FORWARD,0.3,2000); // slowly run into wall in front of cone stack to reset
-        strafe(BACKWARD,0.3,600); // back up a bit from cone stack to claw range
+        strafe(FORWARD,0.3,500); // slowly run to cone stack
         claw.setPosition(CLAW_CLOSE); // grab cone
         sleep(500);
         liftToPositionAndFlip(CONE_STACK+1000,50,ROTATE_UPSIDE); // lift cone from stack
-        strafe(BACKWARD,0.6,1500); // move backward to center tile
-
+        strafe(BACKWARD,0.6,1800); // move backward to center tile
         tallPoleHeading.correctError(1,3000); // turns to pole
+        strafe(BACKWARD,0.4,300);
+
         liftToPositionAndFlip(TALL, ARM_FLIPPED-200, ROTATE_DOWNSIDE); // flips up
-        sleep(200);
-        strafe(BACKWARD,0.3,300); // goes back to pole
+        strafe(BACKWARD,0.3,100); // goes back to pole
         arm.setPower(0.3); // lowers arm on pole
-        sleep(200);
+        sleep(400);
         arm.setPower(0);
         claw.setPosition(CLAW_OPEN); // releases cone
-        sleep(500);
-        strafe(FORWARD,0.3,300); // goes back to center of tile
+        arm.setPower(-0.4);
+        strafe(FORWARD,0.3,250); // goes back to center of tile
+        arm.setPower(0);
         claw.setPosition(CLAW_CLOSE); // closes claw to avoid any wire issues
-        sleep(500);
         liftToPositionAndFlip(50, 50, ROTATE_UPSIDE); // returns lift to lowered position
-*/
-        originalHeading.correctError(1,3000); // goes back to original heading
+
+        originalHeading.correctError(1,2500); // goes back to original heading
         claw.setPosition(CLAW_OPEN); // opens claw again to avoid hitting any junctions
         sleep(500);
         switch(positionToGo) // determine where to go
