@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@TeleOp (name = "Single Person Drive", group = "Drive")
+@TeleOp (name = "One Person Drive", group = "Drive")
 public class OnePersonDrive extends LinearOpMode {
 
     private DcMotorEx leftFront, leftRear, rightFront, rightRear, strafeEncoder, leftLift, rightLift, arm, liftMotor;
