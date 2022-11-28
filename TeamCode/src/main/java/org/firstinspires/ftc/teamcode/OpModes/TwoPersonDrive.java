@@ -18,6 +18,8 @@ public class TwoPersonDrive extends LinearOpMode {
 
     private Servo rotate, claw;
 
+    private int lastLiftPosition;
+
     private final double ROTATE_UPSIDE = 1, ROTATE_DOWNSIDE = -1, CLAW_OPEN = 0.65, CLAW_CLOSE = 0;
 
     private final int TALL = 3100, MEDIUM = 250, LOW = 3100,
@@ -150,21 +152,21 @@ public class TwoPersonDrive extends LinearOpMode {
                     arm.setPower(gamepad2.right_stick_y / 2);
                 }
 
-                if (gamepad2.right_bumper) { //fine adjustment
-                    if ((leftLift.getPower()>0&&liftMotor.getCurrentPosition()>3100)||(leftLift.getPower()<0&&liftMotor.getCurrentPosition()<0)) {
-                        leftLift.setPower(0);
-                        rightLift.setPower(0);
+                if ((leftLift.getPower()>0&&liftMotor.getCurrentPosition()>3100)||(leftLift.getPower()<0&&liftMotor.getCurrentPosition()<0)) {
+                    leftLift.setPower(0);
+                } else {
+                    if (gamepad2.left_stick_y!=0) {
+                        leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                        if (gamepad2.right_bumper) { // fine adjustment
+                            leftLift.setPower(-gamepad2.left_stick_y);
+                        } else { // normal
+                            leftLift.setPower(-gamepad2.left_stick_y/2);
+                        }
+                        lastLiftPosition = leftLift.getCurrentPosition();
                     } else {
-                        leftLift.setPower(-gamepad2.left_stick_y / 2);
-                        rightLift.setPower(-gamepad2.left_stick_y / 2);
-                    }
-                } else { //normal
-                    if ((leftLift.getPower() > 0 && liftMotor.getCurrentPosition() > 3100) || (leftLift.getPower() < 0 && liftMotor.getCurrentPosition() < 0)) {
-                        leftLift.setPower(0);
-                        rightLift.setPower(0);
-                    } else {
-                        leftLift.setPower(-gamepad2.left_stick_y);
-                        rightLift.setPower(-gamepad2.left_stick_y);
+                        leftLift.setTargetPosition(lastLiftPosition);
+                        leftLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        leftLift.setVelocity(1440 * 2);
                     }
                 }
 

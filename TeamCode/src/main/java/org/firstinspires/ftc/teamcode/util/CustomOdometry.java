@@ -49,18 +49,24 @@ public class CustomOdometry {
         rightEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         strafeEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         double angleToEnd = findAngle(xInches,yInches); // this is in radians
-        while (distanceToEndInches(xInches, yInches)>END_RADIUS) {
+        while (distanceToEndInches(xInches, yInches)>/*END_RADIUS*/0) {
             if (strafeErrorInches(xInches, yInches)>STRAFE_ERROR) {
 
             } else if (false) {
                 // TODO: Add in angular error correction. Do we prioritise it over strafe error?
             } else { // if there is no excessive error, we drive as planned.
-                drive(currentAngleToEnd(xInches, yInches),0.3);
+                //drive(currentAngleToEnd(xInches, yInches),0.3);
             }
             // for now we test if we need error correction in the middle if we constantly update the angle to end
-            drive(currentAngleToEnd(xInches, yInches),0.3);
+            drive(currentAngleToEnd(xInches, yInches),0.25);
             if (!telemetry.equals(null)) {
                 telemetry.addData("distance to end",distanceToEndInches(xInches, yInches));
+                telemetry.addData("strafe encoder",strafeEncoder.getCurrentPosition());
+                telemetry.addData("strafe encoder inches",ticksToInches(strafeEncoder.getCurrentPosition()));
+                telemetry.addData("left encoder",-leftEncoder.getCurrentPosition());
+                telemetry.addData("left encoder inches",ticksToInches(-leftEncoder.getCurrentPosition()));
+                telemetry.addData("right encoder",-rightEncoder.getCurrentPosition());
+                telemetry.addData("left encoder inches",ticksToInches(-rightEncoder.getCurrentPosition()));
                 telemetry.update();
             }
         }

@@ -15,7 +15,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.Random;
 
-@TeleOp
+@TeleOp (name = "Velocity Logger", group = "Other")
 public class VeloLogger extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {

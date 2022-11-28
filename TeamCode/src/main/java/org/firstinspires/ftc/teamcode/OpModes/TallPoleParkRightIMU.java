@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.OpModes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -10,7 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Hardware.Sensors.Camera.OpenCV.VisionPipelines.AprilTagDetectionPipeline;
-import org.firstinspires.ftc.teamcode.util.CustomOdometry;
+import org.firstinspires.ftc.teamcode.util.HeadingAdjustment;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -18,8 +17,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-@Autonomous(name = "Odometry Test", group = "Other")
-public class OdometryTest extends LinearOpMode {
+@Autonomous(name = "IMU Right Tall Pole Then Park", group = "Autonomous")
+public class TallPoleParkRightIMU extends LinearOpMode {
 
     private OpenCvCamera camera;
     private AprilTagDetectionPipeline aprilTagDetectionPipeline;
@@ -48,13 +47,119 @@ public class OdometryTest extends LinearOpMode {
 
     private final double ROTATE_UPSIDE = 1, ROTATE_DOWNSIDE = -1, CLAW_OPEN = 0.65, CLAW_CLOSE = 0;
 
-    private final int TALL = 3100, MEDIUM = 250, LOW = 3100,
+    private final int TALL = 3100, MEDIUM = 250, LOW = 3100, CONE_STACK = 1500,
             ARM_FLIPPED = 1000, ARM_SHORT = 150;
 
-    private CustomOdometry customOdometry;
+    private final double FORWARD = 90, BACKWARD = 267, RIGHT = 0, LEFT = 180;
+
+    private HeadingAdjustment tallPoleHeading, originalHeading, coneStackHeading;
 
     public void autonomous() {
-        customOdometry.strafe(10,10);
+        originalHeading.setHeadingGoal(); // sets the heading goal to the original heading so we can return to it later
+        tallPoleHeading.setHeadingGoal(-45); // sets the heading goal to the tall pole
+        coneStackHeading.setHeadingGoal(-90); // sets heading goal to the cone stack
+
+        leftLift.setPower(1); // lifts lift slightly to grab cone better
+        sleep(200);
+        leftLift.setPower(0);
+        claw.setPosition(CLAW_CLOSE); // grabs cone
+        sleep(500);
+        arm.setPower(0.5); // raises arm slightly to avoid running it over
+        sleep(50);
+        arm.setPower(0);
+        strafe(BACKWARD, 0.8, 2500); // runs forward about 2 tiles
+        sleep(200);
+        tallPoleHeading.correctError(1,3000); // turns to pole
+        liftToPositionAndFlip(TALL, ARM_FLIPPED, ROTATE_DOWNSIDE); // flips up
+        sleep(200);
+        // TODO: add any extra adjustment code necessary
+        strafe(BACKWARD,0.3,700); // goes back to pole
+        arm.setPower(0.5); // lowers arm on pole
+        sleep(300);
+        arm.setPower(0);
+        claw.setPosition(CLAW_OPEN); // releases cone
+        sleep(500);
+        strafe(FORWARD,0.3,700); // goes back to center of tile
+        claw.setPosition(CLAW_CLOSE); // closes claw to avoid any wire issues
+        sleep(500);
+        liftToPositionAndFlip(50, 50, ROTATE_UPSIDE); // returns lift to lowered position
+/*
+        strafe(BACKWARD,0.4,300);
+        coneStackHeading.correctError(1,3500); // face towards cone stack
+        claw.setPosition(CLAW_OPEN); // open claw
+        strafe(FORWARD,0.7,1000); // move forward to stack
+        liftToPositionAndFlip(CONE_STACK,50,ROTATE_UPSIDE); // lift lift to cone stack height
+        strafe(FORWARD,0.3,2000); // slowly run into wall in front of cone stack to reset
+        strafe(BACKWARD,0.3,6000); // back up a bit from cone stack to claw range
+        claw.setPosition(CLAW_CLOSE); // grab cone
+        sleep(500);
+        liftToPositionAndFlip(TALL,50,ROTATE_UPSIDE); // lift cone from stack
+        strafe(BACKWARD,0.6,1500); // move backward to center tile
+
+        tallPoleHeading.correctError(1,3000); // turns to pole
+        liftToPositionAndFlip(TALL, ARM_FLIPPED, ROTATE_DOWNSIDE); // flips up
+        sleep(200);
+        // TODO: add any extra adjustment code necessary
+        strafe(BACKWARD,0.3,700); // goes back to pole
+        arm.setPower(0.5); // lowers arm on pole
+        sleep(300);
+        arm.setPower(0);
+        claw.setPosition(CLAW_OPEN); // releases cone
+        sleep(500);
+        strafe(FORWARD,0.3,700); // goes back to center of tile
+        claw.setPosition(CLAW_CLOSE); // closes claw to avoid any wire issues
+        sleep(500);
+        liftToPositionAndFlip(50, 50, ROTATE_UPSIDE); // returns lift to lowered position
+*/
+        originalHeading.correctError(1,3000); // goes back to original heading
+        claw.setPosition(CLAW_OPEN); // opens claw again to avoid hitting any junctions
+        sleep(500);
+        switch(positionToGo) // determine where to go
+        {
+            case 1:
+                //run right to the left space
+                strafe(RIGHT, 0.8,1600);
+                break;
+            case 2:
+                //stay in place
+                break;
+            case 3:
+                //run left to the right space
+                strafe(LEFT,0.8,1600);
+                break;
+        }
+        strafe(FORWARD, 0.8,1000); // move forward slightly to be completely in the space
+        arm.setPower(-0.5); // puts arm at zero position for driver mode
+        sleep(300);
+        arm.setPower(0);
+
+    }
+
+    /**
+     * @param angle remember this is in degrees!
+     */
+    public void strafe(double angle, double power, long millis) {
+        angle = Math.toRadians(angle);
+        double y =  -Math.sin(angle); // Remember, this is reversed!
+        double x = -Math.cos(angle) * 1; // Counteract imperfect strafing
+
+        // Denominator is the largest motor power (absolute value) or 1
+        // This ensures all the powers maintain the same ratio, but only when
+        // at least one is out of the range [-1, 1]
+        double denominator = Math.max(Math.abs(y) + Math.abs(x), 1);
+        double leftFrontPower = (y + x) / denominator;
+        double leftRearPower = (y - x) / denominator;
+        double rightFrontPower = (y - x) / denominator;
+        double rightRearPower = (y + x) / denominator;
+
+        leftFront.setPower(leftFrontPower * power);
+        leftRear.setPower(leftRearPower * power);
+        rightFront.setPower(rightFrontPower * power);
+        rightRear.setPower(rightRearPower * power);
+
+        sleep(millis);
+
+        zeroDrive();
     }
 
     public void liftToPositionAndFlip(int liftPosition, int armPosition, double rotatePosition) {
@@ -86,6 +191,13 @@ public class OdometryTest extends LinearOpMode {
         leftLift.setPower(0);
         leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+
+    public void zeroDrive() {
+        leftFront.setPower(0);
+        leftRear.setPower(0);
+        rightFront.setPower(0);
+        rightRear.setPower(0);
     }
 
     @Override
@@ -136,6 +248,13 @@ public class OdometryTest extends LinearOpMode {
         rotate.setPosition(ROTATE_UPSIDE);
         claw.setPosition(CLAW_OPEN);
 
+        tallPoleHeading = new HeadingAdjustment(hardwareMap);
+        tallPoleHeading.setTelemetry(telemetry);
+        originalHeading = new HeadingAdjustment(hardwareMap);
+        originalHeading.setTelemetry(telemetry);
+        coneStackHeading = new HeadingAdjustment(hardwareMap);
+        coneStackHeading.setTelemetry(telemetry);
+
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
 
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "camera"), cameraMonitorViewId);
@@ -156,9 +275,6 @@ public class OdometryTest extends LinearOpMode {
         });
 
         telemetry.setMsTransmissionInterval(50);
-
-        customOdometry = new CustomOdometry(hardwareMap);
-        customOdometry.setTelemetry(telemetry);
 
         while (!isStarted() && !isStopRequested()) {
             detectTag(0);
@@ -251,3 +367,7 @@ public class OdometryTest extends LinearOpMode {
         sleep(20);
     }
 }
+
+/**
+ * 8==D
+ */
