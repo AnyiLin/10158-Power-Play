@@ -22,7 +22,7 @@ public class HeadingAdjustment {
 
     private double headingGoal, integral, error, previousError;
 
-    private final double MIN_PID = 0.25, MAX_PID = 0.8, P = 0.05, I = 0, D = 0;
+    private final double MIN_PID = 0.25, MAX_PID = 0.8, P = 0.01, I = 0, D = 0;
 
     private long previousLoopTime = 0;
 
@@ -57,7 +57,7 @@ public class HeadingAdjustment {
         previousLoopTime = System.nanoTime();
         previousError = error;
         error = Math.min(leftError(),rightError());
-        integral += (error*deltaTime); // Integral is increased by the error*time (which is .02 seconds using normal IterativeRobot)
+        integral += (error*deltaTime); // Integral is increased by the error*time
         double derivative = (error - previousError) / deltaTime;
         telemetry.addData("integral", integral);
         return P*error + I*integral + D*derivative;
