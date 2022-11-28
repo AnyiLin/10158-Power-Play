@@ -63,7 +63,7 @@ public class TallPoleParkRightIMU extends LinearOpMode {
         sleep(200);
         leftLift.setPower(0);
         claw.setPosition(CLAW_CLOSE); // grabs cone
-        sleep(500);
+        sleep(300);
         arm.setPower(0.5); // raises arm slightly to avoid running it over
         sleep(50);
         arm.setPower(0);
@@ -86,13 +86,16 @@ public class TallPoleParkRightIMU extends LinearOpMode {
         coneStackHeading.correctError(1,3000); // face towards cone stack
         claw.setPosition(CLAW_OPEN); // open claw
         strafe(FORWARD,0.7,1200); // move forward to stack
-        liftToPositionAndFlip(CONE_STACK,50,ROTATE_UPSIDE); // lift lift to cone stack height
-        strafe(FORWARD,0.3,500); // slowly run to cone stack
+        liftToPositionAndFlip(CONE_STACK,100,ROTATE_UPSIDE); // lift lift to cone stack height
+        strafe(FORWARD,0.5,500); // slowly run to cone stack
         claw.setPosition(CLAW_CLOSE); // grab cone
-        sleep(500);
-        liftToPositionAndFlip(CONE_STACK+1000,50,ROTATE_UPSIDE); // lift cone from stack
-        strafe(BACKWARD,0.6,1800); // move backward to center tile
-        tallPoleHeading.correctError(1,3000); // turns to pole
+        sleep(300);
+        //liftToPositionAndFlip(CONE_STACK+1000,50,ROTATE_UPSIDE); // lift cone from stack
+        leftLift.setPower(1);
+        sleep(800);
+        leftLift.setPower(0);
+        strafe(BACKWARD,0.7,1700); // move backward to center tile
+        tallPoleHeading.correctError(1,2500); // turns to pole
         strafe(BACKWARD,0.4,300);
 
         liftToPositionAndFlip(TALL, ARM_FLIPPED-200, ROTATE_DOWNSIDE); // flips up
@@ -109,7 +112,7 @@ public class TallPoleParkRightIMU extends LinearOpMode {
 
         originalHeading.correctError(1,2500); // goes back to original heading
         claw.setPosition(CLAW_OPEN); // opens claw again to avoid hitting any junctions
-        sleep(500);
+        sleep(300);
         switch(positionToGo) // determine where to go
         {
             case 1:
