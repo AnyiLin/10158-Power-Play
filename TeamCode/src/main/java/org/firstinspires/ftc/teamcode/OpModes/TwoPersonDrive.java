@@ -158,9 +158,9 @@ public class TwoPersonDrive extends LinearOpMode {
                     if (gamepad2.left_stick_y!=0) {
                         leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                         if (gamepad2.right_bumper) { // fine adjustment
-                            leftLift.setPower(-gamepad2.left_stick_y);
-                        } else { // normal
                             leftLift.setPower(-gamepad2.left_stick_y/2);
+                        } else { // normal
+                            leftLift.setPower(-gamepad2.left_stick_y);
                         }
                         lastLiftPosition = leftLift.getCurrentPosition();
                     } else {

@@ -140,7 +140,7 @@ public class TallPoleParkRightIMU extends LinearOpMode {
                 break;
             case 3:
                 //run left to the right space
-                strafe(LEFT,0.8,1600);
+                strafe(LEFT,0.8,1400);
                 break;
         }
         strafe(FORWARD, 0.8,1000); // move forward slightly to be completely in the space
