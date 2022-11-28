@@ -333,6 +333,7 @@ public class TwoPersonDrive extends LinearOpMode {
         leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         liftInMotion = false;
+        lastLiftPosition = leftLift.getCurrentPosition();
     }
 
     public void doClaw() {

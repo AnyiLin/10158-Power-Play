@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.checkerframework.checker.units.qual.min;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 
@@ -22,7 +21,7 @@ public class HeadingAdjustment {
 
     private double headingGoal, integral, error, previousError;
 
-    private final double MIN_PID = 0.25, MAX_PID = 0.8, P = 0.01, I = 0, D = 0;
+    private final double MIN_PID = 0.2, MAX_PID = 0.8, P = 0.01, I = 0, D = 0;
 
     private long previousLoopTime = 0;
 
