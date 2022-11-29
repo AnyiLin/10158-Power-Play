@@ -27,7 +27,7 @@ public class OnePersonDrive extends LinearOpMode {
     private final double ROTATE_UPSIDE = 1, ROTATE_DOWNSIDE = -1, CLAW_OPEN = 0.65, CLAW_CLOSE = 0;
 
     private final int TALL = 3100, MEDIUM = 250, LOW = 3100,
-                    ARM_FLIPPED = 900, ARM_SHORT = 150,
+                    ARM_FLIPPED = 950, ARM_SHORT = 150,
                     LIFT_VELOCITY = 1440*2, ARM_VELOCITY = (int)(1440*0.65);
 
     /**
@@ -163,45 +163,6 @@ public class OnePersonDrive extends LinearOpMode {
                         leftLift.setVelocity(1440 * 2);
                     }
                 }
-                /*
-                if (gamepad1.dpad_up)
-                {
-                    liftInMotion = true;
-                    new Thread(new Runnable() {
-                        public void run() {
-                                liftToPositionAndFlip(TALL, ARM_FLIPPED, ROTATE_DOWNSIDE);
-                        }
-                    }).start();
-                }
-                if (gamepad1.dpad_left)
-                {
-                    liftInMotion = true;
-                    new Thread(new Runnable() {
-                        public void run() {
-                            liftToPositionAndFlip(MEDIUM, ARM_FLIPPED, ROTATE_DOWNSIDE);
-                        }
-                    }).start();
-                }
-                if (gamepad1.dpad_down)
-                {
-                    liftInMotion = true;
-                    new Thread(new Runnable() {
-                        public void run() {
-                            liftToPositionAndFlip(LOW, ARM_SHORT, ROTATE_UPSIDE);
-                        }
-                    }).start();
-                }
-                if (gamepad1.dpad_right)
-                {
-                    liftInMotion = true;
-                    new Thread(new Runnable() {
-                        public void run() {
-                            liftToPositionAndFlip(50, 50, ROTATE_UPSIDE);
-                        }
-                    }).start();
-                }
-                 */
-
                 if (gamepad1.dpad_up)
                 {
                     startPreset(TALL,ARM_FLIPPED,ROTATE_DOWNSIDE);

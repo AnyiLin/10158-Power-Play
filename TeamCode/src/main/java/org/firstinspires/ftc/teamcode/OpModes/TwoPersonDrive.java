@@ -20,10 +20,15 @@ public class TwoPersonDrive extends LinearOpMode {
 
     private int lastLiftPosition;
 
+    private long startTime;
+
+    private final long LIFT_TIME_OUT = 2500;
+
     private final double ROTATE_UPSIDE = 1, ROTATE_DOWNSIDE = -1, CLAW_OPEN = 0.65, CLAW_CLOSE = 0;
 
     private final int TALL = 3100, MEDIUM = 250, LOW = 3100,
-            ARM_FLIPPED = 900, ARM_SHORT = 150;
+            ARM_FLIPPED = 950, ARM_SHORT = 150,
+            LIFT_VELOCITY = 1440*2, ARM_VELOCITY = (int)(1440*0.65);
 
     /**
      * IMPORTANT NOTES:
@@ -169,42 +174,38 @@ public class TwoPersonDrive extends LinearOpMode {
                         leftLift.setVelocity(1440 * 2);
                     }
                 }
-
                 if (gamepad2.dpad_up)
                 {
-                    liftInMotion = true;
-                    new Thread(new Runnable() {
-                        public void run() {
-                                liftToPositionAndFlip(TALL, ARM_FLIPPED, ROTATE_DOWNSIDE);
-                        }
-                    }).start();
+                    startPreset(TALL,ARM_FLIPPED,ROTATE_DOWNSIDE);
                 }
                 if (gamepad2.dpad_left)
                 {
-                    liftInMotion = true;
-                    new Thread(new Runnable() {
-                        public void run() {
-                            liftToPositionAndFlip(MEDIUM, ARM_FLIPPED, ROTATE_DOWNSIDE);
-                        }
-                    }).start();
+                    startPreset(MEDIUM,ARM_FLIPPED,ROTATE_DOWNSIDE);
                 }
                 if (gamepad2.dpad_down)
                 {
-                    liftInMotion = true;
-                    new Thread(new Runnable() {
-                        public void run() {
-                            liftToPositionAndFlip(LOW, ARM_SHORT, ROTATE_UPSIDE);
-                        }
-                    }).start();
+                    startPreset(LOW,ARM_SHORT,ROTATE_UPSIDE);
                 }
                 if (gamepad2.dpad_right)
                 {
-                    liftInMotion = true;
-                    new Thread(new Runnable() {
-                        public void run() {
-                            liftToPositionAndFlip(50, 50, ROTATE_UPSIDE);
-                        }
-                    }).start();
+                    startPreset(50,50,ROTATE_UPSIDE);
+                }
+            } else {
+                if (!arm.isBusy()&&!leftLift.isBusy()) {
+                    arm.setPower(0);
+                    arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    leftLift.setPower(0);
+                    leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    lastLiftPosition = leftLift.getCurrentPosition();
+                    liftInMotion = false;
+                }
+                if (System.currentTimeMillis()-startTime>LIFT_TIME_OUT) {
+                    arm.setPower(0);
+                    arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    leftLift.setPower(0);
+                    leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    lastLiftPosition = leftLift.getCurrentPosition();
+                    liftInMotion = false;
                 }
             }
 
@@ -223,117 +224,16 @@ public class TwoPersonDrive extends LinearOpMode {
         }
     }
 
-    public void liftToPositionAndFlip(int liftPosition, int armPosition, double rotatePosition) {
-        /*
-        double liftPower = 1;
-        double armPower = 0.4;
-        long startTime = System.currentTimeMillis();
-        long timeOut = 2500;
-        int totalArmDistance = Math.abs(armPosition-arm.getCurrentPosition());
-
-        if (liftPosition>leftLift.getCurrentPosition())
-        {
-            leftLift.setPower(liftPower);
-        }
-        else
-        {
-            leftLift.setPower(-liftPower);
-        }
-        if (armPosition>arm.getCurrentPosition())
-        {
-            arm.setPower(armPower);
-        }
-        else
-        {
-            arm.setPower(-armPower);
-        }
+    public void startPreset(int liftPosition, int armPosition, double rotatePosition) {
+        liftInMotion = true;
         leftLift.setTargetPosition(liftPosition);
         leftLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftLift.setVelocity(LIFT_VELOCITY);
         arm.setTargetPosition(armPosition);
         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        arm.setVelocity(ARM_VELOCITY);
         rotate.setPosition(rotatePosition);
-        while(arm.isBusy())
-        {
-            if (System.currentTimeMillis()-startTime>timeOut)
-            {
-                break;
-            }
-            if (!leftLift.isBusy())
-            {
-                leftLift.setPower(0);
-            }
-            int currentArmDistance = Math.abs(armPosition-arm.getCurrentPosition());
-            if((double)currentArmDistance/totalArmDistance < 1.0/5)
-            {
-                if (armPosition>arm.getCurrentPosition())
-                {
-                    arm.setPower(armPower*-0.1);
-                }
-                else
-                {
-                    arm.setPower(-armPower*-0.1);
-                }
-            }
-            if((double)currentArmDistance/totalArmDistance > 1.0/5)
-            {
-                if (armPosition>arm.getCurrentPosition())
-                {
-                    arm.setPower(armPower);
-                }
-                else
-                {
-                    arm.setPower(-armPower);
-                }
-            }
-        }
-        arm.setPower(0);
-        while(leftLift.isBusy())
-        {
-            if (System.currentTimeMillis()-startTime>timeOut)
-            {
-                break;
-            }
-        }
-        leftLift.setPower(0);
-        leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        liftInMotion = false;
-         */
-        int liftVelocity = 1440*2;
-        int armVelocity = (int)(1440 * 0.65);
-        long startTime = System.currentTimeMillis();
-        long timeOut = 2500;
-        leftLift.setTargetPosition(liftPosition);
-        leftLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftLift.setVelocity(liftVelocity);
-        arm.setTargetPosition(armPosition);
-        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        arm.setVelocity(armVelocity);
-        rotate.setPosition(rotatePosition);
-        while(arm.isBusy())
-        {
-            if (System.currentTimeMillis()-startTime>timeOut)
-            {
-                break;
-            }
-            if (!leftLift.isBusy())
-            {
-                leftLift.setPower(0);
-            }
-        }
-        arm.setPower(0);
-        while(leftLift.isBusy())
-        {
-            if (System.currentTimeMillis()-startTime>timeOut)
-            {
-                break;
-            }
-        }
-        leftLift.setPower(0);
-        leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        liftInMotion = false;
-        lastLiftPosition = leftLift.getCurrentPosition();
+        startTime = System.currentTimeMillis();
     }
 
     public void doClaw() {
