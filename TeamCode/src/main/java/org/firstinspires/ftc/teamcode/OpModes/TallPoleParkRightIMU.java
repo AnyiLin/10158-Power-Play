@@ -128,6 +128,7 @@ public class TallPoleParkRightIMU extends LinearOpMode {
         originalHeading.correctError(1,2500); // goes back to original heading
         claw.setPosition(CLAW_OPEN); // opens claw again to avoid hitting any junctions
         sleep(300);
+        strafe(BACKWARD,0.5,100); // goes back a bit to avoid hitting the pole
         waitUntilLiftStopped();
         switch(positionToGo) // determine where to go
         {
@@ -140,7 +141,7 @@ public class TallPoleParkRightIMU extends LinearOpMode {
                 break;
             case 3:
                 //run left to the right space
-                strafe(LEFT,0.8,1400);
+                strafe(LEFT,0.8,1500);
                 break;
         }
         strafe(FORWARD, 0.8,1000); // move forward slightly to be completely in the space
