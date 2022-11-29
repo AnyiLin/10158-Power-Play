@@ -23,7 +23,7 @@ public class TwoPersonDrive extends LinearOpMode {
     private final double ROTATE_UPSIDE = 1, ROTATE_DOWNSIDE = -1, CLAW_OPEN = 0.65, CLAW_CLOSE = 0;
 
     private final int TALL = 3100, MEDIUM = 250, LOW = 3100,
-            ARM_FLIPPED = 1000, ARM_SHORT = 150;
+            ARM_FLIPPED = 900, ARM_SHORT = 150;
 
     /**
      * IMPORTANT NOTES:
