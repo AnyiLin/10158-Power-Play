@@ -205,6 +205,7 @@ public class TwoPersonDrive extends LinearOpMode {
                     leftLift.setPower(0);
                     leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     lastLiftPosition = leftLift.getCurrentPosition();
+                    lastArmPosition = arm.getCurrentPosition();
                     liftInMotion = false;
                 }
                 if (System.currentTimeMillis()-startTime>LIFT_TIME_OUT) {
@@ -213,6 +214,7 @@ public class TwoPersonDrive extends LinearOpMode {
                     leftLift.setPower(0);
                     leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     lastLiftPosition = leftLift.getCurrentPosition();
+                    lastArmPosition = arm.getCurrentPosition();
                     liftInMotion = false;
                 }
             }
