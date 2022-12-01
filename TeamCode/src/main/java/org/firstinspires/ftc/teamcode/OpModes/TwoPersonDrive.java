@@ -22,7 +22,7 @@ public class TwoPersonDrive extends LinearOpMode {
 
     private long startTime;
 
-    private final long LIFT_TIME_OUT = 2500;
+    private final long LIFT_TIME_OUT = 2000;
 
     private final double ROTATE_UPSIDE = 1, ROTATE_DOWNSIDE = -1, CLAW_OPEN = 0.65, CLAW_CLOSE = 0;
 
@@ -148,6 +148,7 @@ public class TwoPersonDrive extends LinearOpMode {
                 {
                     arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    lastArmPosition = arm.getCurrentPosition();
                 }
 
                 //y stick inputs are -1 for top and 1 for bottom
@@ -162,7 +163,7 @@ public class TwoPersonDrive extends LinearOpMode {
                 } else {
                     arm.setTargetPosition(lastArmPosition);
                     arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    arm.setVelocity(ARM_VELOCITY);
+                    arm.setVelocity(ARM_VELOCITY/4  );
                 }
 
                 if ((leftLift.getPower()>0&&liftMotor.getCurrentPosition()>3100)||(leftLift.getPower()<0&&liftMotor.getCurrentPosition()<0)) {
@@ -196,7 +197,7 @@ public class TwoPersonDrive extends LinearOpMode {
                 }
                 if (gamepad2.dpad_right)
                 {
-                    startPreset(50,50,ROTATE_UPSIDE);
+                    startPreset(0,0,ROTATE_UPSIDE);
                 }
             } else {
                 if (!arm.isBusy()&&!leftLift.isBusy()) {
