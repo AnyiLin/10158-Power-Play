@@ -16,7 +16,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-@Autonomous (name = "Park", group = "Deprecated")
+@Autonomous (name = "Old Park", group = "Deprecated")
 public class ScrappyAuto extends LinearOpMode {
 
     private OpenCvCamera camera;

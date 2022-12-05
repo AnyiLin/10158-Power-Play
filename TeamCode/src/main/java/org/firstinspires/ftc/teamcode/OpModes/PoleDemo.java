@@ -72,7 +72,7 @@ public class PoleDemo extends LinearOpMode
         while (opModeIsActive())
         {
 
-            telemetry.addData("boxes",poleDetectionPipeline.list);
+            telemetry.addData("boxes",poleDetectionPipeline.getList());
             telemetry.update();
 
             sleep(20);

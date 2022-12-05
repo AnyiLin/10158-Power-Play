@@ -153,7 +153,7 @@ public class OnePersonDrive extends LinearOpMode {
                 } else {
                     arm.setTargetPosition(lastArmPosition);
                     arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    arm.setVelocity(ARM_VELOCITY/4 );
+                    arm.setVelocity(ARM_VELOCITY/4);
                 }
 
                 if ((leftLift.getPower()>0&&liftMotor.getCurrentPosition()>3100)||(leftLift.getPower()<0&&liftMotor.getCurrentPosition()<0)) {

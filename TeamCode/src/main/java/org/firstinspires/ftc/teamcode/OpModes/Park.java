@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -18,8 +17,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-@Autonomous(name = "Blue IMU Right Tall Pole Then Park", group = "Autonomous")
-public class BlueTallPoleParkRightIMU extends LinearOpMode {
+@Autonomous(name = "Park IMU", group = "Autonomous")
+public class Park extends LinearOpMode {
 
     private OpenCvCamera camera;
     private AprilTagDetectionPipeline aprilTagDetectionPipeline;
@@ -55,12 +54,10 @@ public class BlueTallPoleParkRightIMU extends LinearOpMode {
 
     private final double FORWARD = 90, BACKWARD = 267, RIGHT = 0, LEFT = 180;
 
-    private HeadingAdjustment tallPoleHeading, originalHeading, coneStackHeading;
+    private HeadingAdjustment originalHeading;
 
     public void autonomous() {
         originalHeading.setHeadingGoal(); // sets the heading goal to the original heading so we can return to it later
-        tallPoleHeading.setHeadingGoal(-45); // sets the heading goal to the tall pole
-        coneStackHeading.setHeadingGoal(-90); // sets heading goal to the cone stack
 
         leftLift.setPower(1); // lifts lift slightly to grab cone better
         sleep(200);
@@ -70,67 +67,13 @@ public class BlueTallPoleParkRightIMU extends LinearOpMode {
         arm.setPower(0.5); // raises arm slightly to avoid running it over
         sleep(50);
         arm.setPower(0);
-        strafe(BACKWARD, 0.8, 2650); // runs forward about 2 tiles
-        new Thread(new Runnable() { public void run() {
-            liftToPositionAndFlip(TALL, ARM_FLIPPED-200, ROTATE_DOWNSIDE); // flips up
-        }}).start();
-        tallPoleHeading.correctError(1,3000); // turns to pole
-
-        strafe(BACKWARD,0.3,600); // goes back to pole
-        waitUntilLiftStopped();
-        arm.setPower(0.3); // lowers arm on pole
-        sleep(500);
-        arm.setPower(0);
-        sleep(500);
-        claw.setPosition(CLAW_OPEN); // releases cone
-        arm.setPower(-0.4);
-        strafe(FORWARD,0.3,600); // goes back to center of tile
-        sleep(200); // let arm go back more
-        arm.setPower(0);
-        claw.setPosition(CLAW_CLOSE); // closes claw to avoid any wire issues
-        new Thread(new Runnable() { public void run() {
-            liftToPositionAndFlip(CONE_STACK,50,ROTATE_UPSIDE); // lift lift to cone stack height in a new thread
-        }}).start();
-
-        strafe(FORWARD,0.4,100); // goes forward a bit to adjust for cone stack
-        coneStackHeading.correctError(1,4000); // face towards cone stack
-        claw.setPosition(CLAW_OPEN); // open claw
-        strafe(FORWARD,0.7,1200); // move forward to stack
-        waitUntilLiftStopped();
-        strafe(FORWARD,0.5,550); // slowly run to cone stack
-        claw.setPosition(CLAW_CLOSE); // grab cone
-        sleep(300);
-        leftLift.setPower(1); // lifts cone from stack
-        sleep(800);
-        leftLift.setPower(0);
-        strafe(BACKWARD,0.7,1800); // move backward to center tile
-        new Thread(new Runnable() { public void run() {
-            liftToPositionAndFlip(TALL, ARM_FLIPPED-200, ROTATE_DOWNSIDE); // flips up in a new thread
-        }}).start();
-        tallPoleHeading.correctError(1,3000); // turns to pole
-        strafe(BACKWARD,0.4,100); // goes back to middle of tile
-
-        strafe(BACKWARD,0.3,350); // goes back to pole
-        waitUntilLiftStopped();
-        arm.setPower(0.3); // lowers arm on pole
-        sleep(500);
-        arm.setPower(0);
-        sleep(500);
-        claw.setPosition(CLAW_OPEN); // releases cone
-        arm.setPower(-0.4);
-        strafe(FORWARD,0.3,400); // goes back to center of tile
-        sleep(200); // let arm go back more
-        arm.setPower(0);
-        claw.setPosition(CLAW_CLOSE); // closes claw to avoid any wire issues
-        new Thread(new Runnable() { public void run() {
-            liftToPositionAndFlip(50, 50, ROTATE_UPSIDE); // returns lift to lowered position in a new thread
-        }}).start();
+        strafe(BACKWARD, 0.8, 2700); // runs forward about 2 tiles
 
         originalHeading.correctError(1,3000); // goes back to original heading
-        claw.setPosition(CLAW_OPEN); // opens claw again to avoid hitting any junctions
-        sleep(300);
-        strafe(BACKWARD,0.5,200); // goes back a bit to avoid hitting the pole
-        waitUntilLiftStopped();
+        arm.setPower(0.4); // raises arm to avoid poles
+        sleep(1000);
+        arm.setPower(0);
+        strafe(BACKWARD,0.5,100); // goes back a bit to avoid hitting the pole
         switch(positionToGo) // determine where to go
         {
             case 1:
@@ -146,14 +89,14 @@ public class BlueTallPoleParkRightIMU extends LinearOpMode {
                 break;
         }
         strafe(FORWARD, 0.8,1000); // move forward slightly to be completely in the space
-        arm.setPower(-0.5); // puts arm at zero position for driver mode
-        sleep(300);
+        arm.setPower(-0.3); // puts arm at zero position for driver mode
+        sleep(1100);
         arm.setPower(0);
 
     }
 
     /**
-     * @param angle remember this is in degrees!
+     * @param angle remember this is in degrees!`
      */
     public void strafe(double angle, double power, long millis) {
         angle = Math.toRadians(angle);
@@ -271,12 +214,8 @@ public class BlueTallPoleParkRightIMU extends LinearOpMode {
         rotate.setPosition(ROTATE_UPSIDE);
         claw.setPosition(CLAW_OPEN);
 
-        tallPoleHeading = new HeadingAdjustment(hardwareMap);
-        tallPoleHeading.setTelemetry(telemetry);
         originalHeading = new HeadingAdjustment(hardwareMap);
         originalHeading.setTelemetry(telemetry);
-        coneStackHeading = new HeadingAdjustment(hardwareMap);
-        coneStackHeading.setTelemetry(telemetry);
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
 
