@@ -22,7 +22,7 @@ public class TwoPersonDrive extends LinearOpMode {
 
     private long startTime;
 
-    private final long LIFT_TIME_OUT = 2000;
+    private final long LIFT_TIME_OUT = 1500;
 
     private final double ROTATE_UPSIDE = 1, ROTATE_DOWNSIDE = -1, CLAW_OPEN = 0.65, CLAW_CLOSE = 0;
 
