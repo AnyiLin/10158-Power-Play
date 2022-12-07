@@ -59,8 +59,8 @@ public class TallPoleParkRightUniversalIMU extends LinearOpMode {
 
     public void autonomous() {
         originalHeading.setHeadingGoal(); // sets the heading goal to the original heading so we can return to it later
-        tallPoleHeading.setHeadingGoal(45); // sets the heading goal to the tall pole
-        coneStackHeading.setHeadingGoal(90); // sets heading goal to the cone stack
+        tallPoleHeading.setHeadingGoal(-45); // sets the heading goal to the tall pole
+        coneStackHeading.setHeadingGoal(-90); // sets heading goal to the cone stack
 
         leftLift.setPower(1); // lifts lift slightly to grab cone better
         sleep(200);

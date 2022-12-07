@@ -50,7 +50,7 @@ public class TallPoleParkRightIMU extends LinearOpMode {
     private final double ROTATE_UPSIDE = 1, ROTATE_DOWNSIDE = -1, CLAW_OPEN = 0.65, CLAW_CLOSE = 0;
 
     private final int TALL = 3100, MEDIUM = 250, LOW = 3100, CONE_STACK = 1700,
-            ARM_FLIPPED = 1000, ARM_SHORT = 150;
+            ARM_FLIPPED = 950, ARM_SHORT = 150;
 
     private final double FORWARD = 90, BACKWARD = 267, RIGHT = 0, LEFT = 180;
 
@@ -69,13 +69,13 @@ public class TallPoleParkRightIMU extends LinearOpMode {
         arm.setPower(0.5); // raises arm slightly to avoid running it over
         sleep(50);
         arm.setPower(0);
-        strafe(BACKWARD, 0.8, 2600); // runs forward about 2 tiles
+        strafe(BACKWARD, 0.8, 2530); // runs forward about 2 tiles
         new Thread(new Runnable() { public void run() {
             liftToPositionAndFlip(TALL, ARM_FLIPPED-200, ROTATE_DOWNSIDE); // flips up
         }}).start();
         tallPoleHeading.correctError(1,3000); // turns to pole
 
-        strafe(BACKWARD,0.3,300); // goes back to pole
+        strafe(BACKWARD,0.3,400); // goes back to pole
         waitUntilLiftStopped();
         arm.setPower(0.3); // lowers arm on pole
         sleep(500);
@@ -83,7 +83,7 @@ public class TallPoleParkRightIMU extends LinearOpMode {
         sleep(500);
         claw.setPosition(CLAW_OPEN); // releases cone
         arm.setPower(-0.4);
-        strafe(FORWARD,0.3,300); // goes back to center of tile
+        strafe(FORWARD,0.3,400); // goes back to center of tile
         sleep(200); // let arm go back more
         arm.setPower(0);
         claw.setPosition(CLAW_CLOSE); // closes claw to avoid any wire issues
@@ -109,7 +109,7 @@ public class TallPoleParkRightIMU extends LinearOpMode {
         tallPoleHeading.correctError(1,3000); // turns to pole
         strafe(BACKWARD,0.4,100); // goes back to middle of tile
 
-        strafe(BACKWARD,0.3,200); // goes back to pole
+        strafe(BACKWARD,0.3,300); // goes back to pole
         waitUntilLiftStopped();
         arm.setPower(0.3); // lowers arm on pole
         sleep(500);
@@ -117,7 +117,7 @@ public class TallPoleParkRightIMU extends LinearOpMode {
         sleep(500);
         claw.setPosition(CLAW_OPEN); // releases cone
         arm.setPower(-0.4);
-        strafe(FORWARD,0.3,350); // goes back to center of tile
+        strafe(FORWARD,0.3,450); // goes back to center of tile
         sleep(200); // let arm go back more
         arm.setPower(0);
         claw.setPosition(CLAW_CLOSE); // closes claw to avoid any wire issues
