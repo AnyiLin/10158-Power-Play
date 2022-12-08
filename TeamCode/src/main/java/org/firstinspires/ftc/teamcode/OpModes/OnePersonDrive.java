@@ -156,17 +156,24 @@ public class OnePersonDrive extends LinearOpMode {
                     arm.setVelocity(ARM_VELOCITY/4);
                 }
 
-                if ((leftLift.getPower()>0&&liftMotor.getCurrentPosition()>3100)||(leftLift.getPower()<0&&liftMotor.getCurrentPosition()<0)) {
+                if ((liftMotor.getPower()>0&&liftMotor.getCurrentPosition()>3100)||(liftMotor.getPower()<0&&liftMotor.getCurrentPosition()<0)) {
                     leftLift.setPower(0);
+                    rightLift.setPower(0);
                 } else {
                     if (gamepad1.right_stick_y!=0) {
                         leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                         leftLift.setPower(-gamepad1.right_stick_y);
-                        lastLiftPosition = leftLift.getCurrentPosition();
+                        lastLiftPosition = liftMotor.getCurrentPosition();
+                        rightLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                        rightLift.setPower(-gamepad1.right_stick_y);
+                        lastLiftPosition = rightLift.getCurrentPosition();
                     } else {
                         leftLift.setTargetPosition(lastLiftPosition);
                         leftLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         leftLift.setVelocity(1440 * 2);
+                        rightLift.setTargetPosition(lastLiftPosition);
+                        rightLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        rightLift.setVelocity(1440 * 2);
                     }
                 }
                 if (gamepad1.dpad_up)
@@ -186,12 +193,14 @@ public class OnePersonDrive extends LinearOpMode {
                     startPreset(0,0,ROTATE_UPSIDE);
                 }
             } else {
-                if (!arm.isBusy()&&!leftLift.isBusy()) {
+                if (!arm.isBusy()&&!leftLift.isBusy()&&!rightLift.isBusy()) {
                     arm.setPower(0);
                     arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     leftLift.setPower(0);
                     leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                    lastLiftPosition = leftLift.getCurrentPosition();
+                    rightLift.setPower(0);
+                    rightLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    lastLiftPosition = liftMotor.getCurrentPosition();
                     lastArmPosition = arm.getCurrentPosition();
                     liftInMotion = false;
                 }
@@ -200,7 +209,9 @@ public class OnePersonDrive extends LinearOpMode {
                     arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     leftLift.setPower(0);
                     leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                    lastLiftPosition = leftLift.getCurrentPosition();
+                    rightLift.setPower(0);
+                    rightLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    lastLiftPosition = liftMotor.getCurrentPosition();
                     lastArmPosition = arm.getCurrentPosition();
                     liftInMotion = false;
                 }
@@ -225,6 +236,9 @@ public class OnePersonDrive extends LinearOpMode {
         leftLift.setTargetPosition(liftPosition);
         leftLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftLift.setVelocity(LIFT_VELOCITY);
+        rightLift.setTargetPosition(liftPosition);
+        rightLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightLift.setVelocity(LIFT_VELOCITY);
         arm.setTargetPosition(armPosition);
         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         arm.setVelocity(ARM_VELOCITY);
