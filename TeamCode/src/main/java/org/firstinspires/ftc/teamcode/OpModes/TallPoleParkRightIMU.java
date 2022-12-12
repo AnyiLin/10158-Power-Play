@@ -306,6 +306,8 @@ public class TallPoleParkRightIMU extends LinearOpMode {
 
         camera.stopStreaming();
 
+        if (isStopRequested()) return;
+
         parkingPosition();
 
         if (!isStopRequested()) autonomous();

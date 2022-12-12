@@ -28,7 +28,7 @@ public class OnePersonDrive extends LinearOpMode {
 
     private final int TALL = 3100, MEDIUM = 250, LOW = 2800,
                     ARM_FLIPPED = 950, ARM_SHORT = 150,
-                    LIFT_VELOCITY = 1440*2, ARM_VELOCITY = (int)(1440*0.65);
+                    LIFT_VELOCITY = 1440*2, ARM_VELOCITY = (int)(1440*2);//*0.65);
 
     /**
      * IMPORTANT NOTES:

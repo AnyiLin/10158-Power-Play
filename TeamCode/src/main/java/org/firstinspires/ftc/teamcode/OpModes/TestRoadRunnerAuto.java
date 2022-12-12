@@ -1,16 +1,19 @@
 package org.firstinspires.ftc.teamcode.OpModes;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Hardware.Sensors.Camera.OpenCV.VisionPipelines.AprilTagDetectionPipeline;
-import org.firstinspires.ftc.teamcode.util.HeadingAdjustment;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.util.HeadingAdjustmentUniversalIMU;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -18,8 +21,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-@Autonomous(name = "Blue IMU Right Tall Pole Then Park", group = "Autonomous")
-public class BlueTallPoleParkRightIMU extends LinearOpMode {
+@Autonomous(name = "Test Road Runner Right Auto", group = "Other")
+public class TestRoadRunnerAuto extends LinearOpMode {
 
     private OpenCvCamera camera;
     private AprilTagDetectionPipeline aprilTagDetectionPipeline;
@@ -40,6 +43,10 @@ public class BlueTallPoleParkRightIMU extends LinearOpMode {
 
     private AprilTagDetection tagOfInterest = null;
 
+    private SampleMecanumDrive drive;
+
+    private Trajectory initialDrive, turnToTallPole, turnToConeStack, driveToConeStack, driveToTallPole, turnToInitialHeading, parking1, parking2, parking3;
+
     private DcMotorEx leftFront, leftRear, rightFront, rightRear, strafeEncoder, leftLift, rightLift, arm, liftMotor;
 
     private final String setLiftMotor = "leftLift";
@@ -48,135 +55,93 @@ public class BlueTallPoleParkRightIMU extends LinearOpMode {
 
     private boolean liftInMotion;
 
+    private int conesInStack = 5;
+
     private final double ROTATE_UPSIDE = 1, ROTATE_DOWNSIDE = -1, CLAW_OPEN = 0.65, CLAW_CLOSE = 0;
 
-    private final int TALL = 3100, MEDIUM = 250, LOW = 3100, CONE_STACK = 1500,
+    private final int TALL = 3100, MEDIUM = 250, LOW = 3100, CONE_STACK = 1700,
             ARM_FLIPPED = 1000, ARM_SHORT = 150;
 
     private final double FORWARD = 90, BACKWARD = 267, RIGHT = 0, LEFT = 180;
 
-    private HeadingAdjustment tallPoleHeading, originalHeading, coneStackHeading;
 
     public void autonomous() {
-        originalHeading.setHeadingGoal(); // sets the heading goal to the original heading so we can return to it later
-        tallPoleHeading.setHeadingGoal(-45); // sets the heading goal to the tall pole
-        coneStackHeading.setHeadingGoal(-90); // sets heading goal to the cone stack
-
         leftLift.setPower(1); // lifts lift slightly to grab cone better
         sleep(200);
         leftLift.setPower(0);
         claw.setPosition(CLAW_CLOSE); // grabs cone
         sleep(300);
-        arm.setPower(0.5); // raises arm slightly to avoid running it over
-        sleep(50);
-        arm.setPower(0);
-        strafe(BACKWARD, 0.8, 2650); // runs forward about 2 tiles
-        new Thread(new Runnable() { public void run() {
-            liftToPositionAndFlip(TALL, ARM_FLIPPED-200, ROTATE_DOWNSIDE); // flips up
-        }}).start();
-        tallPoleHeading.correctError(1,3000); // turns to pole
-
-        strafe(BACKWARD,0.3,600); // goes back to pole
-        waitUntilLiftStopped();
-        arm.setPower(0.3); // lowers arm on pole
-        sleep(500);
-        arm.setPower(0);
-        sleep(500);
-        claw.setPosition(CLAW_OPEN); // releases cone
-        arm.setPower(-0.4);
-        strafe(FORWARD,0.3,600); // goes back to center of tile
-        sleep(200); // let arm go back more
-        arm.setPower(0);
-        claw.setPosition(CLAW_CLOSE); // closes claw to avoid any wire issues
-        new Thread(new Runnable() { public void run() {
-            liftToPositionAndFlip(CONE_STACK,50,ROTATE_UPSIDE); // lift lift to cone stack height in a new thread
-        }}).start();
-
-        strafe(FORWARD,0.4,100); // goes forward a bit to adjust for cone stack
-        coneStackHeading.correctError(1,4000); // face towards cone stack
-        claw.setPosition(CLAW_OPEN); // open claw
-        strafe(FORWARD,0.7,1200); // move forward to stack
-        waitUntilLiftStopped();
-        strafe(FORWARD,0.5,550); // slowly run to cone stack
-        claw.setPosition(CLAW_CLOSE); // grab cone
-        sleep(300);
-        leftLift.setPower(1); // lifts cone from stack
-        sleep(800);
-        leftLift.setPower(0);
-        strafe(BACKWARD,0.7,1800); // move backward to center tile
+        drive.followTrajectory(initialDrive); // drives to the tall pole
         new Thread(new Runnable() { public void run() {
             liftToPositionAndFlip(TALL, ARM_FLIPPED-200, ROTATE_DOWNSIDE); // flips up in a new thread
         }}).start();
-        tallPoleHeading.correctError(1,3000); // turns to pole
-        strafe(BACKWARD,0.4,100); // goes back to middle of tile
-
-        strafe(BACKWARD,0.3,350); // goes back to pole
+        for (int counter = 0; counter < 3; counter++) {
+            drive.followTrajectory(turnToTallPole); // turns to the tall pole
+            waitUntilLiftStopped();
+            arm.setPower(0.3); // lowers arm on pole
+            sleep(500);
+            arm.setPower(0);
+            sleep(500);
+            claw.setPosition(CLAW_OPEN); // releases cone
+            arm.setPower(-0.4); // lifts arm off pole
+            sleep(500);
+            arm.setPower(0);
+            claw.setPosition(CLAW_CLOSE); // closes claw to avoid any wire issues
+            new Thread(new Runnable() {
+                public void run() {
+                    liftToPositionAndFlip(getConeStackHeight(), 50, ROTATE_UPSIDE); // lift lift to cone stack height in a new thread
+                }
+            }).start();
+            drive.followTrajectory(turnToConeStack); // turns to cone stack
+            drive.followTrajectory(driveToConeStack); // drives to cone stack
+            waitUntilLiftStopped();
+            claw.setPosition(CLAW_CLOSE); // grab cone
+            sleep(300);
+            leftLift.setPower(1); // lifts cone from stack
+            sleep(800);
+            leftLift.setPower(0);
+            conesInStack--;
+            new Thread(new Runnable() {
+                public void run() {
+                    liftToPositionAndFlip(TALL, ARM_FLIPPED - 200, ROTATE_DOWNSIDE); // flips up in a new thread
+                }
+            }).start();
+            drive.followTrajectory(driveToTallPole); // drives to tall pole
+        }
+        drive.followTrajectory(turnToTallPole); // turns to the tall pole
         waitUntilLiftStopped();
         arm.setPower(0.3); // lowers arm on pole
         sleep(500);
         arm.setPower(0);
         sleep(500);
         claw.setPosition(CLAW_OPEN); // releases cone
-        arm.setPower(-0.4);
-        strafe(FORWARD,0.3,400); // goes back to center of tile
-        sleep(200); // let arm go back more
+        arm.setPower(-0.4); // lifts arm off pole
+        sleep(500);
         arm.setPower(0);
         claw.setPosition(CLAW_CLOSE); // closes claw to avoid any wire issues
-        new Thread(new Runnable() { public void run() {
-            liftToPositionAndFlip(50, 50, ROTATE_UPSIDE); // returns lift to lowered position in a new thread
-        }}).start();
-
-        originalHeading.correctError(1,3000); // goes back to original heading
-        claw.setPosition(CLAW_OPEN); // opens claw again to avoid hitting any junctions
-        sleep(300);
-        strafe(BACKWARD,0.5,200); // goes back a bit to avoid hitting the pole
+        new Thread(new Runnable() {
+            public void run() {
+                liftToPositionAndFlip(0, 50, ROTATE_UPSIDE); // returns lift to lowered position in a new thread
+            }
+        }).start();
+        drive.followTrajectory(turnToInitialHeading); // turns back to initial heading
         waitUntilLiftStopped();
-        switch(positionToGo) // determine where to go
-        {
+        claw.setPosition(CLAW_OPEN); // opens claw to avoid hitting any junctions
+        sleep(300);
+        switch (positionToGo) {
             case 1:
-                //run right to the left space
-                strafe(RIGHT, 0.8,1400);
+                drive.followTrajectory(parking1);
                 break;
             case 2:
-                //stay in place
+                drive.followTrajectory(parking2);
                 break;
             case 3:
-                //run left to the right space
-                strafe(LEFT,0.8,1500);
+                drive.followTrajectory(parking3);
                 break;
         }
-        strafe(FORWARD, 0.8,1000); // move forward slightly to be completely in the space
         arm.setPower(-0.5); // puts arm at zero position for driver mode
         sleep(300);
         arm.setPower(0);
-
-    }
-
-    /**
-     * @param angle remember this is in degrees!
-     */
-    public void strafe(double angle, double power, long millis) {
-        angle = Math.toRadians(angle);
-        double y =  -Math.sin(angle); // Remember, this is reversed!
-        double x = -Math.cos(angle) * 1; // Counteract imperfect strafing
-
-        // Denominator is the largest motor power (absolute value) or 1
-        // This ensures all the powers maintain the same ratio, but only when
-        // at least one is out of the range [-1, 1]
-        double denominator = Math.max(Math.abs(y) + Math.abs(x), 1);
-        double leftFrontPower = (y + x) / denominator;
-        double leftRearPower = (y - x) / denominator;
-        double rightFrontPower = (y - x) / denominator;
-        double rightRearPower = (y + x) / denominator;
-
-        leftFront.setPower(leftFrontPower * power);
-        leftRear.setPower(leftRearPower * power);
-        rightFront.setPower(rightFrontPower * power);
-        rightRear.setPower(rightRearPower * power);
-
-        sleep(millis);
-
-        zeroDrive();
     }
 
     public void liftToPositionAndFlip(int liftPosition, int armPosition, double rotatePosition) {
@@ -212,19 +177,65 @@ public class BlueTallPoleParkRightIMU extends LinearOpMode {
         liftInMotion = false;
     }
 
-    public void zeroDrive() {
-        leftFront.setPower(0);
-        leftRear.setPower(0);
-        rightFront.setPower(0);
-        rightRear.setPower(0);
+    public int getConeStackHeight() {
+        return CONE_STACK - 275 * (5 - conesInStack);
     }
 
     public void waitUntilLiftStopped() {
         while (liftInMotion) {}
     }
 
+    public void buildTrajectories() {
+        drive = new SampleMecanumDrive(hardwareMap);
+
+        /**
+         * maybe use spline paths instead of straight trajectories?
+         *
+         * strafe forward 60 inches
+         * turn to the left Math.toRadians(45); (to the tall pole)
+         * score cone, perhaps have the lift asynchronously as we turn
+         * turn to the left Math.toRadians(45); (to the cone stack)
+         * have the lift go down to cone stack height, perhaps as we turn
+         * strafe backward 24 or so inches to the cone stack
+         * grab the cone and lift the lift
+         * strafe backwards 24 or so inches to the middle tile
+         */
+        initialDrive = drive.trajectoryBuilder(new Pose2d())
+                .splineToSplineHeading(new Pose2d(60, 0, Math.toRadians(0)), Math.toRadians(0))
+                .build();
+        turnToTallPole = drive.trajectoryBuilder(initialDrive.end())
+                .splineToSplineHeading(new Pose2d(60, 0, Math.toRadians(45)), Math.toRadians(45))
+                .build();
+        turnToConeStack = drive.trajectoryBuilder(turnToTallPole.end())
+                .splineToSplineHeading(new Pose2d(60, 0, Math.toRadians(90)), Math.toRadians(90))
+                .build();
+        driveToConeStack= drive.trajectoryBuilder(turnToConeStack.end())
+                .splineToSplineHeading(new Pose2d(60, -24, Math.toRadians(90)), Math.toRadians(90))
+                .build();
+        driveToTallPole = drive.trajectoryBuilder(driveToConeStack.end())
+                .splineToSplineHeading(new Pose2d(60, 0, Math.toRadians(90)), Math.toRadians(90))
+                .build();
+        turnToInitialHeading = drive.trajectoryBuilder(driveToTallPole.end())
+                .splineToSplineHeading(new Pose2d(60, 0, Math.toRadians(0)), Math.toRadians(0))
+                .build();
+        parking1 = drive.trajectoryBuilder(turnToInitialHeading.end())
+                .splineToSplineHeading(new Pose2d(60, -24, Math.toRadians(0)), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(44,-24, Math.toRadians(0)), Math.toRadians(0))
+                .build();
+        parking2 = drive.trajectoryBuilder(turnToInitialHeading.end())
+                .splineToSplineHeading(new Pose2d(60, 0, Math.toRadians(0)), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(44,0, Math.toRadians(0)), Math.toRadians(0))
+                .build();
+        parking3 = drive.trajectoryBuilder(turnToInitialHeading.end())
+                .splineToSplineHeading(new Pose2d(60, 24, Math.toRadians(0)), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(44,24, Math.toRadians(0)), Math.toRadians(0))
+                .build();
+    }
+
     @Override
     public void runOpMode() {
+        buildTrajectories();
+
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
         leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
         rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
@@ -270,13 +281,6 @@ public class BlueTallPoleParkRightIMU extends LinearOpMode {
         claw = hardwareMap.get(Servo.class, "claw");
         rotate.setPosition(ROTATE_UPSIDE);
         claw.setPosition(CLAW_OPEN);
-
-        tallPoleHeading = new HeadingAdjustment(hardwareMap);
-        tallPoleHeading.setTelemetry(telemetry);
-        originalHeading = new HeadingAdjustment(hardwareMap);
-        originalHeading.setTelemetry(telemetry);
-        coneStackHeading = new HeadingAdjustment(hardwareMap);
-        coneStackHeading.setTelemetry(telemetry);
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
 
