@@ -28,7 +28,8 @@ public class TwoPersonDrive extends LinearOpMode {
 
     private final int TALL = 3100, MEDIUM = 250, LOW = 2800,
             ARM_FLIPPED = 950, ARM_SHORT = 150,
-            LIFT_VELOCITY = 1440*2, ARM_VELOCITY = (int)(1440*0.65);
+            LIFT_VELOCITY = 1440*2, ARM_VELOCITY = (int)(1440*0.65),
+            LIFT_MAXIMUM = 1000, LIFT_MINIMUM = 0;
 
     /**
      * IMPORTANT NOTES:
@@ -67,7 +68,6 @@ public class TwoPersonDrive extends LinearOpMode {
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
         leftLift.setDirection(DcMotorSimple.Direction.REVERSE);
-        //arm.setDirection(DcMotorSimple.Direction.REVERSE);
         arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -137,21 +137,17 @@ public class TwoPersonDrive extends LinearOpMode {
             dpad_right - reset
              */
 
-            if (gamepad2.x)
-            {
+            if (gamepad2.x) {
                 liftInMotion = false;
             }
 
-            if (!liftInMotion)
-            {
-                if (gamepad2.right_stick_button)
-                {
+            if (!liftInMotion) {
+                if (gamepad2.right_stick_button) {
                     arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     lastArmPosition = arm.getCurrentPosition();
                 }
-                if (gamepad2.left_stick_button)
-                {
+                if (gamepad2.left_stick_button) {
                     leftLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     rightLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -174,7 +170,7 @@ public class TwoPersonDrive extends LinearOpMode {
                     arm.setVelocity(ARM_VELOCITY/4);
                 }
 
-                if ((liftMotor.getPower()>0&&liftMotor.getCurrentPosition()>3100)||(liftMotor.getPower()<0&&liftMotor.getCurrentPosition()<0)) {
+                if ((liftMotor.getPower()>0&&liftMotor.getCurrentPosition()>LIFT_MAXIMUM)||(liftMotor.getPower()<0&&liftMotor.getCurrentPosition()<LIFT_MINIMUM)) {
                     leftLift.setPower(0);
                     rightLift.setPower(0);
                 } else {
@@ -270,56 +266,34 @@ public class TwoPersonDrive extends LinearOpMode {
     }
 
     public void doClaw() {
-        if (gamepad2.a)
-        {
-            if (clawButtonPressed)
-            {
-            }
-            else
-            {
+        if (gamepad2.a) {
+            if (!clawButtonPressed) {
                 clawButtonPressed = true;
-                if (claw.getPosition()==CLAW_CLOSE)
-                {
+                if (claw.getPosition()==CLAW_CLOSE) {
                     claw.setPosition(CLAW_OPEN);
-                }
-                else
-                {
+                } else {
                     claw.setPosition(CLAW_CLOSE);
                 }
             }
-        }
-        else
-        {
-            if (clawButtonPressed)
-            {
+        } else {
+            if (clawButtonPressed) {
                 clawButtonPressed = false;
             }
         }
     }
 
     public void doRotate() {
-        if (gamepad2.b)
-        {
-            if (rotateButtonPressed)
-            {
-            }
-            else
-            {
+        if (gamepad2.b) {
+            if (!rotateButtonPressed) {
                 rotateButtonPressed = true;
-                if (rotate.getPosition()==ROTATE_UPSIDE)
-                {
+                if (rotate.getPosition()==ROTATE_UPSIDE) {
                     rotate.setPosition(ROTATE_DOWNSIDE);
-                }
-                else
-                {
+                } else {
                     rotate.setPosition(ROTATE_UPSIDE);
                 }
             }
-        }
-        else
-        {
-            if (rotateButtonPressed)
-            {
+        } else {
+            if (rotateButtonPressed) {
                 rotateButtonPressed = false;
             }
         }

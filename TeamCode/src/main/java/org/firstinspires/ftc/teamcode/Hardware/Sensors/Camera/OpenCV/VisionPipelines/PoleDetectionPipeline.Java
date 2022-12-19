@@ -13,6 +13,7 @@ import org.opencv.photo.Photo;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class PoleDetectionPipeline extends OpenCvPipeline {
@@ -84,7 +85,7 @@ public class PoleDetectionPipeline extends OpenCvPipeline {
         List<MatOfPoint> k;
         MatOfPoint2f approxCurve;
         ArrayList<List<Point>> o;
-        Imgproc.resize(img, a, new Size( 448, 252));
+        Imgproc.resize(img, a, new Size(), 448, 252);
         b = colorAugmentation(a);
         c = findYellow(b);
         Core.bitwise_not(c, d);
@@ -97,13 +98,12 @@ public class PoleDetectionPipeline extends OpenCvPipeline {
         k = new ArrayList<>();
         Imgproc.findContours(j, k, l, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
         approxCurve = new MatOfPoint2f();
-        o = new ArrayList<List<Point>>();
+        o = new ArrayList<>();
         for (int n = 0; n < k.size(); n++) {
             //Convert contours(i) from MatOfPoint to MatOfPoint2f
             MatOfPoint2f contour2f = new MatOfPoint2f(k.get(n).toArray());
             double approxDistance = Imgproc.arcLength(contour2f, true) * 0.02;
-            Imgproc.approxPolyDP(contour2f, approxCurve, approxDistance, true);
-        }
+            Imgproc.approxPolyDP(contour2f, approxCurve, approxDistance, true);}
         MatOfPoint points;
         points = new MatOfPoint(approxCurve.toArray());
         List<Point> m;
@@ -112,8 +112,8 @@ public class PoleDetectionPipeline extends OpenCvPipeline {
         double y1 = m.get(0).y;
         double x2 = m.get(1).x;
         double y2 = m.get(1).y;
-        if((calcArea(Math.abs(x1-x2),Math.abs(y1-y2))>100)&&(Math.abs(y1-y2)*.8>Math.abs(x1-x2))){
-            o.add(m);
+        if((calcArea(Math.abs(x1-x2),Math.abs(y1-y2))>100)&&(Math.abs(x1-x2)*.8>Math.abs(y1-y2))){
+            o.add(Arrays.asList(new Point((x1+x2)/2,(y1+y2)/2)));
         }
         return o;
     }
