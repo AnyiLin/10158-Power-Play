@@ -62,9 +62,6 @@ public class TestRoadRunnerAuto extends LinearOpMode {
     private final int TALL = 3100, MEDIUM = 250, LOW = 3100, CONE_STACK = 1700,
             ARM_FLIPPED = 1000, ARM_SHORT = 150;
 
-    private final double FORWARD = 90, BACKWARD = 267, RIGHT = 0, LEFT = 180;
-
-
     public void autonomous() {
         leftLift.setPower(1); // lifts lift slightly to grab cone better
         sleep(200);
@@ -254,7 +251,6 @@ public class TestRoadRunnerAuto extends LinearOpMode {
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
         leftLift.setDirection(DcMotorSimple.Direction.REVERSE);
-        //arm.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         strafeEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

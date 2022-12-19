@@ -240,9 +240,14 @@ public class TwoPersonDrive extends LinearOpMode {
             telemetry.addData("left lift power", leftLift.getPower());
             telemetry.addData("right lift position", rightLift.getCurrentPosition());
             telemetry.addData("lift position", liftMotor.getCurrentPosition());
+            telemetry.addData("last lift position", lastLiftPosition);
             telemetry.addData("arm position", arm.getCurrentPosition());
             telemetry.addData("arm power", arm.getPower());
             telemetry.addData("lift in motion", liftInMotion);
+            telemetry.addData("left front position", leftFront.getCurrentPosition());
+            telemetry.addData("right front position", rightFront.getCurrentPosition());
+            telemetry.addData("left rear position", leftRear.getCurrentPosition());
+            telemetry.addData("right rear position", rightRear.getCurrentPosition());
             telemetry.addData("left encoder", -leftFront.getCurrentPosition());//reversed
             telemetry.addData("right encoder", -rightRear.getCurrentPosition());//reversed
             telemetry.addData("strafe encoder", strafeEncoder.getCurrentPosition());
