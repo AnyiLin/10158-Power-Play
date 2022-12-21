@@ -26,9 +26,10 @@ public class OnePersonDrive extends LinearOpMode {
 
     private final double ROTATE_UPSIDE = 1, ROTATE_DOWNSIDE = -1, CLAW_OPEN = 0.65, CLAW_CLOSE = 0;
 
-    private final int TALL = 3100, MEDIUM = 250, LOW = 2800,
+    private final int TALL = 2000, MEDIUM = 160, LOW = 1800,
                     ARM_FLIPPED = 950, ARM_SHORT = 150,
-                    LIFT_VELOCITY = 1440*2, ARM_VELOCITY = (int)(1440*2);//*0.65);
+                    LIFT_VELOCITY = 1440*2, ARM_VELOCITY = (int)(1440*2 *0.65),
+                    LIFT_MAXIMUM = 2000, LIFT_MINIMUM = 0;
 
     /**
      * IMPORTANT NOTES:
@@ -156,7 +157,7 @@ public class OnePersonDrive extends LinearOpMode {
                     arm.setVelocity(ARM_VELOCITY/4);
                 }
 
-                if ((liftMotor.getPower()>0&&liftMotor.getCurrentPosition()>3100)||(liftMotor.getPower()<0&&liftMotor.getCurrentPosition()<0)) {
+                if ((liftMotor.getPower()>0&&liftMotor.getCurrentPosition()>LIFT_MAXIMUM)||(liftMotor.getPower()<0&&liftMotor.getCurrentPosition()<LIFT_MINIMUM)) {
                     leftLift.setPower(0);
                     rightLift.setPower(0);
                 } else {
@@ -219,7 +220,9 @@ public class OnePersonDrive extends LinearOpMode {
 
             telemetry.addData("claw button pressed", clawButtonPressed);
             telemetry.addData("left lift position", leftLift.getCurrentPosition());
+            telemetry.addData("left lift power", leftLift.getPower());
             telemetry.addData("right lift position", rightLift.getCurrentPosition());
+            telemetry.addData("right lift power", rightLift.getPower());
             telemetry.addData("lift position", liftMotor.getCurrentPosition());
             telemetry.addData("last lift position", lastLiftPosition);
             telemetry.addData("arm position", arm.getCurrentPosition());

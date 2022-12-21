@@ -24,12 +24,13 @@ public class TwoPersonDrive extends LinearOpMode {
 
     private final long LIFT_TIME_OUT = 1500;
 
-    private final double ROTATE_UPSIDE = 1, ROTATE_DOWNSIDE = -1, CLAW_OPEN = 0.65, CLAW_CLOSE = 0;
+    private final double ROTATE_UPSIDE = 1, ROTATE_DOWNSIDE = -1, CLAW_OPEN = 0.65, CLAW_CLOSE = 0,
+            LIFT_ERROR = 200;
 
-    private final int TALL = 3100, MEDIUM = 250, LOW = 2800,
+    private final int TALL = 2000, MEDIUM = 160, LOW = 1800,
             ARM_FLIPPED = 950, ARM_SHORT = 150,
             LIFT_VELOCITY = 1440*2, ARM_VELOCITY = (int)(1440*0.65),
-            LIFT_MAXIMUM = 1000, LIFT_MINIMUM = 0;
+            LIFT_MAXIMUM = 2000, LIFT_MINIMUM = 0;
 
     /**
      * IMPORTANT NOTES:
@@ -184,6 +185,12 @@ public class TwoPersonDrive extends LinearOpMode {
                             leftLift.setPower(-gamepad2.left_stick_y);
                             rightLift.setPower(-gamepad2.left_stick_y);
                         }
+                        if (leftLift.getCurrentPosition()-rightLift.getCurrentPosition()>LIFT_ERROR) {
+                            dampenLiftMotor(leftLift);
+                        }
+                        if (rightLift.getCurrentPosition()-leftLift.getCurrentPosition()>LIFT_ERROR) {
+                            dampenLiftMotor(rightLift);
+                        }
                         lastLiftPosition = liftMotor.getCurrentPosition();
                     } else {
                         leftLift.setTargetPosition(lastLiftPosition);
@@ -239,6 +246,7 @@ public class TwoPersonDrive extends LinearOpMode {
             telemetry.addData("left lift position", leftLift.getCurrentPosition());
             telemetry.addData("left lift power", leftLift.getPower());
             telemetry.addData("right lift position", rightLift.getCurrentPosition());
+            telemetry.addData("right lift power", rightLift.getPower());
             telemetry.addData("lift position", liftMotor.getCurrentPosition());
             telemetry.addData("last lift position", lastLiftPosition);
             telemetry.addData("arm position", arm.getCurrentPosition());
@@ -253,6 +261,14 @@ public class TwoPersonDrive extends LinearOpMode {
             telemetry.addData("strafe encoder", strafeEncoder.getCurrentPosition());
             telemetry.update();
         }
+    }
+
+    public void dampenLiftMotor(DcMotorEx lift) {
+        lift.setPower(lift.getPower()*(0.9+0.1* LIFT_ERROR/liftError()));
+    }
+
+    public int liftError() {
+        return Math.abs(leftLift.getCurrentPosition()-rightLift.getCurrentPosition());
     }
 
     public void startPreset(int liftPosition, int armPosition, double rotatePosition) {

@@ -53,7 +53,7 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
 public class DriveVelocityPIDTuner extends LinearOpMode {
 
     public final Telemetry dash = FtcDashboard.getInstance().getTelemetry();
-    public static double DISTANCE = 72; // in
+    public static double DISTANCE = 56; // in
 
     enum Mode {
         DRIVER_MODE,
