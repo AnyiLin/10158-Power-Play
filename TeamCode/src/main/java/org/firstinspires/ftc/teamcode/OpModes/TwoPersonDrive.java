@@ -28,8 +28,8 @@ public class TwoPersonDrive extends LinearOpMode {
             LIFT_ERROR = 200;
 
     private final int TALL = 2000, MEDIUM = 160, LOW = 1800,
-            ARM_FLIPPED = 950, ARM_SHORT = 150,
-            LIFT_VELOCITY = 1440*2, ARM_VELOCITY = (int)(1440*0.65),
+            ARM_FLIPPED = 1350, ARM_SHORT = 350,
+            LIFT_VELOCITY = 1440*2, ARM_VELOCITY = (int)(1440*0.8),
             LIFT_MAXIMUM = 2000, LIFT_MINIMUM = 0;
 
     /**

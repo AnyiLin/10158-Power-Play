@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.teamcode.OpModes;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -13,7 +13,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Hardware.Sensors.Camera.OpenCV.VisionPipelines.AprilTagDetectionPipeline;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.util.HeadingAdjustmentUniversalIMU;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -45,7 +44,7 @@ public class TestRoadRunnerAuto extends LinearOpMode {
 
     private SampleMecanumDrive drive;
 
-    private Trajectory initialDrive, turnToTallPole, turnToConeStack, driveToConeStack, driveToTallPole, turnToInitialHeading, parking1, parking2, parking3;
+    private Trajectory initialDrive1, initialDrive2, turnToTallPole, turnToConeStack, driveToConeStack1, driveToConeStack2, driveToTallPole, turnToStartingWall, parking1, parking2, parking3;
 
     private DcMotorEx leftFront, leftRear, rightFront, rightRear, strafeEncoder, leftLift, rightLift, arm, liftMotor;
 
@@ -59,16 +58,93 @@ public class TestRoadRunnerAuto extends LinearOpMode {
 
     private final double ROTATE_UPSIDE = 1, ROTATE_DOWNSIDE = -1, CLAW_OPEN = 0.65, CLAW_CLOSE = 0;
 
-    private final int TALL = 3100, MEDIUM = 250, LOW = 3100, CONE_STACK = 1700,
-            ARM_FLIPPED = 1000, ARM_SHORT = 150;
+    private final int TALL = 2000, MEDIUM = 160, LOW = 1800, CONE_STACK = 950,
+            ARM_FLIPPED = 1350, ARM_SHORT = 350;
+
+    private Pose2d tallPolePose = new Pose2d(-2, 52, Math.toRadians(-45));
 
     public void autonomous() {
         leftLift.setPower(1); // lifts lift slightly to grab cone better
-        sleep(200);
+        rightLift.setPower(1);
+        sleep(100);
         leftLift.setPower(0);
+        rightLift.setPower(0);
         claw.setPosition(CLAW_CLOSE); // grabs cone
         sleep(300);
-        drive.followTrajectory(initialDrive); // drives to the tall pole
+        initialDrive(); // drives to the tall pole tile
+        new Thread(new Runnable() {
+            public void run() {
+                liftToPositionAndFlip(TALL, ARM_FLIPPED - 200, ROTATE_DOWNSIDE); // flips up in a new thread
+            }
+        }).start();
+        for (int counter = 0; counter < 1; counter++) {
+            waitUntilLiftStopped();
+            arm.setPower(0.3); // lowers arm on pole
+            sleep(300);
+            arm.setPower(0);
+            claw.setPosition(CLAW_OPEN); // releases cone
+            arm.setPower(-0.4); // lifts arm off pole
+            sleep(300);
+            arm.setPower(0);
+            claw.setPosition(CLAW_CLOSE); // closes claw to avoid any wire issues
+            new Thread(new Runnable() {
+                public void run() {
+                    liftToPositionAndFlip(getConeStackHeight(), 50, ROTATE_UPSIDE); // lift lift to cone stack height in a new thread
+                }
+            }).start();
+            drive.followTrajectory(turnToConeStack); // turns to cone stack
+            claw.setPosition(CLAW_OPEN); // opens claw for cone stack
+            driveToConeStack(); // drives to cone stack
+            waitUntilLiftStopped();
+            claw.setPosition(CLAW_CLOSE); // grab cone
+            sleep(300);
+            leftLift.setPower(1); // lifts cone from stack
+            rightLift.setPower(1);
+            sleep(500);
+            leftLift.setPower(0);
+            rightLift.setPower(0);
+            conesInStack--;
+            new Thread(new Runnable() {
+                public void run() {
+                    liftToPositionAndFlip(TALL, ARM_FLIPPED - 200, ROTATE_DOWNSIDE); // flips up in a new thread
+                }
+            }).start();
+            drive.followTrajectory(driveToTallPole); // drives to tall pole
+        }
+        waitUntilLiftStopped();
+        arm.setPower(0.3); // lowers arm on pole
+        sleep(300);
+        arm.setPower(0);
+        claw.setPosition(CLAW_OPEN); // releases cone
+        arm.setPower(-0.4); // lifts arm off pole
+        sleep(300);
+        arm.setPower(0);
+        claw.setPosition(CLAW_CLOSE); // closes claw to avoid any wire issues
+        new Thread(new Runnable() {
+            public void run() {
+                liftToPositionAndFlip(0, 50, ROTATE_UPSIDE); // returns lift to lowered position in a new thread
+            }
+        }).start();
+        drive.followTrajectory(turnToStartingWall); // turns back to initial heading
+        waitUntilLiftStopped();
+        claw.setPosition(CLAW_OPEN); // opens claw to avoid hitting any junctions
+        sleep(300);
+        switch (positionToGo) {
+            case 1:
+                drive.followTrajectory(parking1);
+                break;
+            case 2:
+                drive.followTrajectory(parking2);
+                break;
+            case 3:
+                drive.followTrajectory(parking3);
+                break;
+        }
+        arm.setPower(-0.5); // puts arm at zero position for driver mode
+        sleep(300);
+        arm.setPower(0);
+
+        /**
         new Thread(new Runnable() { public void run() {
             liftToPositionAndFlip(TALL, ARM_FLIPPED-200, ROTATE_DOWNSIDE); // flips up in a new thread
         }}).start();
@@ -139,17 +215,32 @@ public class TestRoadRunnerAuto extends LinearOpMode {
         arm.setPower(-0.5); // puts arm at zero position for driver mode
         sleep(300);
         arm.setPower(0);
+         **/
+    }
+
+    public void initialDrive() {
+        drive.followTrajectory(initialDrive1);
+        drive.followTrajectory(initialDrive2);
+        drive.followTrajectory(turnToTallPole); // drives to the tall pole
+    }
+
+    public void driveToConeStack() {
+        drive.followTrajectory(driveToConeStack1);
+        drive.followTrajectory(driveToConeStack2);
     }
 
     public void liftToPositionAndFlip(int liftPosition, int armPosition, double rotatePosition) {
         liftInMotion = true;
         int liftVelocity = 1440*2;
-        int armVelocity = (int)(1440 * 0.65);
+        int armVelocity = (int)(1440 * 0.8);
         long startTime = System.currentTimeMillis();
         long timeOut = 2500;
         leftLift.setTargetPosition(liftPosition);
         leftLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftLift.setVelocity(liftVelocity);
+        rightLift.setTargetPosition(liftPosition);
+        rightLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightLift.setVelocity(liftVelocity);
         arm.setTargetPosition(armPosition);
         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         arm.setVelocity(armVelocity);
@@ -158,24 +249,27 @@ public class TestRoadRunnerAuto extends LinearOpMode {
             if (System.currentTimeMillis()-startTime>timeOut) {
                 break;
             }
-            if (!leftLift.isBusy()) {
-                leftLift.setPower(0);
+        }
+        while(leftLift.isBusy()) {
+            if (System.currentTimeMillis()-startTime>timeOut) {
+                break;
             }
         }
-        arm.setPower(0);
-        while(leftLift.isBusy()) {
+        while(rightLift.isBusy()) {
             if (System.currentTimeMillis()-startTime>timeOut) {
                 break;
             }
         }
         leftLift.setPower(0);
         leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightLift.setPower(0);
+        rightLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         liftInMotion = false;
     }
 
     public int getConeStackHeight() {
-        return CONE_STACK - 275 * (5 - conesInStack);
+        return CONE_STACK - 180 * (5 - conesInStack);
     }
 
     public void waitUntilLiftStopped() {
@@ -184,6 +278,42 @@ public class TestRoadRunnerAuto extends LinearOpMode {
 
     public void buildTrajectories() {
         drive = new SampleMecanumDrive(hardwareMap);
+
+        initialDrive1 = drive.trajectoryBuilder(new Pose2d())
+                .lineTo(new Vector2d(-3,20))
+                .build();
+        initialDrive2 = drive.trajectoryBuilder(initialDrive1.end())
+                .lineTo(new Vector2d(-3,40))
+                .build();
+        turnToTallPole = drive.trajectoryBuilder(initialDrive2.end())
+                .lineToSplineHeading(tallPolePose)
+                .build();
+        turnToConeStack = drive.trajectoryBuilder(turnToTallPole.end())
+                .lineToSplineHeading(new Pose2d(0, 51, Math.toRadians(0)))
+                .build();
+        driveToConeStack1 = drive.trajectoryBuilder(turnToConeStack.end())
+                .lineToSplineHeading(new Pose2d(20, 51, Math.toRadians(0)))
+                .build();
+        driveToConeStack2 = drive.trajectoryBuilder(driveToConeStack1.end())
+                .lineToSplineHeading(new Pose2d(26, 51, Math.toRadians(0)))
+                .build();
+        driveToTallPole = drive.trajectoryBuilder(driveToConeStack2.end())
+                .lineToSplineHeading(tallPolePose)
+                .build();
+        turnToStartingWall = drive.trajectoryBuilder(driveToTallPole.end())
+                .lineToSplineHeading(new Pose2d(0, 50, Math.toRadians(-90)))
+                .build();
+        parking1 = drive.trajectoryBuilder(turnToStartingWall.end())
+                .lineToSplineHeading(new Pose2d(-24, 50, Math.toRadians(-90)))
+                .splineToConstantHeading(new Vector2d(-24,30), Math.toRadians(-90))
+                .build();
+        parking2 = drive.trajectoryBuilder(turnToStartingWall.end())
+                .lineToSplineHeading(new Pose2d(0,30, Math.toRadians(-90)))
+                .build();
+        parking3 = drive.trajectoryBuilder(turnToStartingWall.end())
+                .lineToSplineHeading(new Pose2d(24, 50, Math.toRadians(-90)))
+                .splineToConstantHeading(new Vector2d(24,30), Math.toRadians(-90))
+                .build();
 
         /**
          * maybe use spline paths instead of straight trajectories?
@@ -196,7 +326,7 @@ public class TestRoadRunnerAuto extends LinearOpMode {
          * strafe backward 24 or so inches to the cone stack
          * grab the cone and lift the lift
          * strafe backwards 24 or so inches to the middle tile
-         */
+
         initialDrive = drive.trajectoryBuilder(new Pose2d())
                 .splineToSplineHeading(new Pose2d(60, 0, Math.toRadians(0)), Math.toRadians(0))
                 .build();
@@ -227,6 +357,7 @@ public class TestRoadRunnerAuto extends LinearOpMode {
                 .splineToSplineHeading(new Pose2d(60, 24, Math.toRadians(0)), Math.toRadians(0))
                 .splineToSplineHeading(new Pose2d(44,24, Math.toRadians(0)), Math.toRadians(0))
                 .build();
+         */
     }
 
     @Override
@@ -248,8 +379,10 @@ public class TestRoadRunnerAuto extends LinearOpMode {
         leftLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        /*
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
+        */
         leftLift.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -280,7 +413,7 @@ public class TestRoadRunnerAuto extends LinearOpMode {
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
 
-        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "camera"), cameraMonitorViewId);
+        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "leftCamera"), cameraMonitorViewId);
         aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
 
         camera.setPipeline(aprilTagDetectionPipeline);
