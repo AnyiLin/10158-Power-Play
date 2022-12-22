@@ -58,8 +58,8 @@ public class TestRoadRunnerAuto extends LinearOpMode {
 
     private final double ROTATE_UPSIDE = 1, ROTATE_DOWNSIDE = -1, CLAW_OPEN = 0.65, CLAW_CLOSE = 0;
 
-    private final int TALL = 2000, MEDIUM = 160, LOW = 1800, CONE_STACK = 950,
-            ARM_FLIPPED = 1350, ARM_SHORT = 350;
+    private final int TALL = 2000, MEDIUM = 160, LOW = 1800, CONE_STACK = 1100,
+            ARM_FLIPPED = 950, ARM_SHORT = 150;
 
     private Pose2d tallPolePose = new Pose2d(-2, 52, Math.toRadians(-45));
 
@@ -72,30 +72,18 @@ public class TestRoadRunnerAuto extends LinearOpMode {
         claw.setPosition(CLAW_CLOSE); // grabs cone
         sleep(300);
         initialDrive(); // drives to the tall pole tile
-        new Thread(new Runnable() {
-            public void run() {
-                liftToPositionAndFlip(TALL, ARM_FLIPPED - 200, ROTATE_DOWNSIDE); // flips up in a new thread
-            }
-        }).start();
         for (int counter = 0; counter < 1; counter++) {
-            waitUntilLiftStopped();
             arm.setPower(0.3); // lowers arm on pole
             sleep(300);
             arm.setPower(0);
             claw.setPosition(CLAW_OPEN); // releases cone
+            /*
             arm.setPower(-0.4); // lifts arm off pole
             sleep(300);
             arm.setPower(0);
-            claw.setPosition(CLAW_CLOSE); // closes claw to avoid any wire issues
-            new Thread(new Runnable() {
-                public void run() {
-                    liftToPositionAndFlip(getConeStackHeight(), 50, ROTATE_UPSIDE); // lift lift to cone stack height in a new thread
-                }
-            }).start();
-            drive.followTrajectory(turnToConeStack); // turns to cone stack
-            claw.setPosition(CLAW_OPEN); // opens claw for cone stack
+             */
+            liftToPositionAndFlip(getConeStackHeight(), 50, ROTATE_UPSIDE, turnToConeStack); // lift lift to cone stack height and turn to cone stack
             driveToConeStack(); // drives to cone stack
-            waitUntilLiftStopped();
             claw.setPosition(CLAW_CLOSE); // grab cone
             sleep(300);
             leftLift.setPower(1); // lifts cone from stack
@@ -104,14 +92,8 @@ public class TestRoadRunnerAuto extends LinearOpMode {
             leftLift.setPower(0);
             rightLift.setPower(0);
             conesInStack--;
-            new Thread(new Runnable() {
-                public void run() {
-                    liftToPositionAndFlip(TALL, ARM_FLIPPED - 200, ROTATE_DOWNSIDE); // flips up in a new thread
-                }
-            }).start();
-            drive.followTrajectory(driveToTallPole); // drives to tall pole
+            liftToPositionAndFlip(TALL, ARM_FLIPPED - 300, ROTATE_DOWNSIDE, driveToTallPole); // flips up and drives to tall pole
         }
-        waitUntilLiftStopped();
         arm.setPower(0.3); // lowers arm on pole
         sleep(300);
         arm.setPower(0);
@@ -120,13 +102,7 @@ public class TestRoadRunnerAuto extends LinearOpMode {
         sleep(300);
         arm.setPower(0);
         claw.setPosition(CLAW_CLOSE); // closes claw to avoid any wire issues
-        new Thread(new Runnable() {
-            public void run() {
-                liftToPositionAndFlip(0, 50, ROTATE_UPSIDE); // returns lift to lowered position in a new thread
-            }
-        }).start();
-        drive.followTrajectory(turnToStartingWall); // turns back to initial heading
-        waitUntilLiftStopped();
+        liftToPositionAndFlip(0, 50, ROTATE_UPSIDE, turnToStartingWall); // returns lift to lowered position and turns to initial heading
         claw.setPosition(CLAW_OPEN); // opens claw to avoid hitting any junctions
         sleep(300);
         switch (positionToGo) {
@@ -143,85 +119,12 @@ public class TestRoadRunnerAuto extends LinearOpMode {
         arm.setPower(-0.5); // puts arm at zero position for driver mode
         sleep(300);
         arm.setPower(0);
-
-        /**
-        new Thread(new Runnable() { public void run() {
-            liftToPositionAndFlip(TALL, ARM_FLIPPED-200, ROTATE_DOWNSIDE); // flips up in a new thread
-        }}).start();
-        for (int counter = 0; counter < 3; counter++) {
-            drive.followTrajectory(turnToTallPole); // turns to the tall pole
-            waitUntilLiftStopped();
-            arm.setPower(0.3); // lowers arm on pole
-            sleep(500);
-            arm.setPower(0);
-            sleep(500);
-            claw.setPosition(CLAW_OPEN); // releases cone
-            arm.setPower(-0.4); // lifts arm off pole
-            sleep(500);
-            arm.setPower(0);
-            claw.setPosition(CLAW_CLOSE); // closes claw to avoid any wire issues
-            new Thread(new Runnable() {
-                public void run() {
-                    liftToPositionAndFlip(getConeStackHeight(), 50, ROTATE_UPSIDE); // lift lift to cone stack height in a new thread
-                }
-            }).start();
-            drive.followTrajectory(turnToConeStack); // turns to cone stack
-            drive.followTrajectory(driveToConeStack); // drives to cone stack
-            waitUntilLiftStopped();
-            claw.setPosition(CLAW_CLOSE); // grab cone
-            sleep(300);
-            leftLift.setPower(1); // lifts cone from stack
-            sleep(800);
-            leftLift.setPower(0);
-            conesInStack--;
-            new Thread(new Runnable() {
-                public void run() {
-                    liftToPositionAndFlip(TALL, ARM_FLIPPED - 200, ROTATE_DOWNSIDE); // flips up in a new thread
-                }
-            }).start();
-            drive.followTrajectory(driveToTallPole); // drives to tall pole
-        }
-        drive.followTrajectory(turnToTallPole); // turns to the tall pole
-        waitUntilLiftStopped();
-        arm.setPower(0.3); // lowers arm on pole
-        sleep(500);
-        arm.setPower(0);
-        sleep(500);
-        claw.setPosition(CLAW_OPEN); // releases cone
-        arm.setPower(-0.4); // lifts arm off pole
-        sleep(500);
-        arm.setPower(0);
-        claw.setPosition(CLAW_CLOSE); // closes claw to avoid any wire issues
-        new Thread(new Runnable() {
-            public void run() {
-                liftToPositionAndFlip(0, 50, ROTATE_UPSIDE); // returns lift to lowered position in a new thread
-            }
-        }).start();
-        drive.followTrajectory(turnToInitialHeading); // turns back to initial heading
-        waitUntilLiftStopped();
-        claw.setPosition(CLAW_OPEN); // opens claw to avoid hitting any junctions
-        sleep(300);
-        switch (positionToGo) {
-            case 1:
-                drive.followTrajectory(parking1);
-                break;
-            case 2:
-                drive.followTrajectory(parking2);
-                break;
-            case 3:
-                drive.followTrajectory(parking3);
-                break;
-        }
-        arm.setPower(-0.5); // puts arm at zero position for driver mode
-        sleep(300);
-        arm.setPower(0);
-         **/
     }
 
     public void initialDrive() {
         drive.followTrajectory(initialDrive1);
         drive.followTrajectory(initialDrive2);
-        drive.followTrajectory(turnToTallPole); // drives to the tall pole
+        liftToPositionAndFlip(TALL, ARM_FLIPPED - 300, ROTATE_DOWNSIDE, turnToTallPole); // flips up and drives to tall pole
     }
 
     public void driveToConeStack() {
@@ -264,8 +167,56 @@ public class TestRoadRunnerAuto extends LinearOpMode {
         leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightLift.setPower(0);
         rightLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        arm.setPower(0);
         arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         liftInMotion = false;
+    }
+
+    public void liftToPositionAndFlip(int liftPosition, int armPosition, double rotatePosition, Trajectory trajectory) {
+        liftInMotion = true;
+        int liftVelocity = 1440*2;
+        int armVelocity = (int)(1440 * 0.8);
+        long startTime = System.currentTimeMillis();
+        long timeOut = 2500;
+        leftLift.setTargetPosition(liftPosition);
+        leftLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftLift.setVelocity(liftVelocity);
+        rightLift.setTargetPosition(liftPosition);
+        rightLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightLift.setVelocity(liftVelocity);
+        arm.setTargetPosition(armPosition);
+        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        arm.setVelocity(armVelocity);
+        rotate.setPosition(rotatePosition);
+        drive.followTrajectoryAsync(trajectory);
+        while(arm.isBusy()) {
+            if (System.currentTimeMillis()-startTime>timeOut) {
+                break;
+            }
+            drive.update();
+        }
+        while(leftLift.isBusy()) {
+            if (System.currentTimeMillis()-startTime>timeOut) {
+                break;
+            }
+            drive.update();
+        }
+        while(rightLift.isBusy()) {
+            if (System.currentTimeMillis()-startTime>timeOut) {
+                break;
+            }
+            drive.update();
+        }
+        leftLift.setPower(0);
+        leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightLift.setPower(0);
+        rightLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        arm.setPower(0);
+        arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        liftInMotion = false;
+        while (drive.isBusy()) {
+            drive.update();
+        }
     }
 
     public int getConeStackHeight() {
@@ -304,60 +255,16 @@ public class TestRoadRunnerAuto extends LinearOpMode {
                 .lineToSplineHeading(new Pose2d(0, 50, Math.toRadians(-90)))
                 .build();
         parking1 = drive.trajectoryBuilder(turnToStartingWall.end())
-                .lineToSplineHeading(new Pose2d(-24, 50, Math.toRadians(-90)))
-                .splineToConstantHeading(new Vector2d(-24,30), Math.toRadians(-90))
+                .lineToSplineHeading(new Pose2d(-20, 50, Math.toRadians(-90)))
+                .splineToConstantHeading(new Vector2d(-20,30), Math.toRadians(-90))
                 .build();
         parking2 = drive.trajectoryBuilder(turnToStartingWall.end())
                 .lineToSplineHeading(new Pose2d(0,30, Math.toRadians(-90)))
                 .build();
         parking3 = drive.trajectoryBuilder(turnToStartingWall.end())
-                .lineToSplineHeading(new Pose2d(24, 50, Math.toRadians(-90)))
-                .splineToConstantHeading(new Vector2d(24,30), Math.toRadians(-90))
+                .lineToSplineHeading(new Pose2d(20, 50, Math.toRadians(-90)))
+                .splineToConstantHeading(new Vector2d(20,30), Math.toRadians(-90))
                 .build();
-
-        /**
-         * maybe use spline paths instead of straight trajectories?
-         *
-         * strafe forward 60 inches
-         * turn to the left Math.toRadians(45); (to the tall pole)
-         * score cone, perhaps have the lift asynchronously as we turn
-         * turn to the left Math.toRadians(45); (to the cone stack)
-         * have the lift go down to cone stack height, perhaps as we turn
-         * strafe backward 24 or so inches to the cone stack
-         * grab the cone and lift the lift
-         * strafe backwards 24 or so inches to the middle tile
-
-        initialDrive = drive.trajectoryBuilder(new Pose2d())
-                .splineToSplineHeading(new Pose2d(60, 0, Math.toRadians(0)), Math.toRadians(0))
-                .build();
-        turnToTallPole = drive.trajectoryBuilder(initialDrive.end())
-                .splineToSplineHeading(new Pose2d(60, 0, Math.toRadians(45)), Math.toRadians(45))
-                .build();
-        turnToConeStack = drive.trajectoryBuilder(turnToTallPole.end())
-                .splineToSplineHeading(new Pose2d(60, 0, Math.toRadians(90)), Math.toRadians(90))
-                .build();
-        driveToConeStack= drive.trajectoryBuilder(turnToConeStack.end())
-                .splineToSplineHeading(new Pose2d(60, -24, Math.toRadians(90)), Math.toRadians(90))
-                .build();
-        driveToTallPole = drive.trajectoryBuilder(driveToConeStack.end())
-                .splineToSplineHeading(new Pose2d(60, 0, Math.toRadians(90)), Math.toRadians(90))
-                .build();
-        turnToInitialHeading = drive.trajectoryBuilder(driveToTallPole.end())
-                .splineToSplineHeading(new Pose2d(60, 0, Math.toRadians(0)), Math.toRadians(0))
-                .build();
-        parking1 = drive.trajectoryBuilder(turnToInitialHeading.end())
-                .splineToSplineHeading(new Pose2d(60, -24, Math.toRadians(0)), Math.toRadians(0))
-                .splineToSplineHeading(new Pose2d(44,-24, Math.toRadians(0)), Math.toRadians(0))
-                .build();
-        parking2 = drive.trajectoryBuilder(turnToInitialHeading.end())
-                .splineToSplineHeading(new Pose2d(60, 0, Math.toRadians(0)), Math.toRadians(0))
-                .splineToSplineHeading(new Pose2d(44,0, Math.toRadians(0)), Math.toRadians(0))
-                .build();
-        parking3 = drive.trajectoryBuilder(turnToInitialHeading.end())
-                .splineToSplineHeading(new Pose2d(60, 24, Math.toRadians(0)), Math.toRadians(0))
-                .splineToSplineHeading(new Pose2d(44,24, Math.toRadians(0)), Math.toRadians(0))
-                .build();
-         */
     }
 
     @Override
