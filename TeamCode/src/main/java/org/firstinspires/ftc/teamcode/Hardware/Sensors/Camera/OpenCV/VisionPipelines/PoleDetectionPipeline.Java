@@ -6,6 +6,7 @@ import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
+import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
@@ -13,17 +14,16 @@ import org.opencv.photo.Photo;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class PoleDetectionPipeline extends OpenCvPipeline {
-    public ArrayList<ArrayList<List<Point>>> listt = new ArrayList<>();
+    public ArrayList<ArrayList<Rect>> listt = new ArrayList<>();
     @Override
     public Mat processFrame(Mat input){
         listt.add(this.boxes(input));
         return input;
     }
-    public ArrayList<ArrayList<List<Point>>> getList(){
+    public ArrayList<ArrayList<Rect>> getList(){
         return listt;
     }
     public Mat removeWhiteNoise(int n, Mat img) {
@@ -76,15 +76,13 @@ public class PoleDetectionPipeline extends OpenCvPipeline {
         return ddest;
     }
 
-    public ArrayList<List<Point>> boxes(Mat img) {
+    public ArrayList<Rect> boxes(Mat img) {
         Mat a = new Mat();
         Mat l = new Mat();
         Mat e = new Mat();
         Mat d = new Mat();
         Mat f,g,h,i,j,b,c;
-        List<MatOfPoint> k;
         MatOfPoint2f approxCurve;
-        ArrayList<List<Point>> o;
         Imgproc.resize(img, a, new Size(), 448, 252);
         b = colorAugmentation(a);
         c = findYellow(b);
@@ -95,26 +93,24 @@ public class PoleDetectionPipeline extends OpenCvPipeline {
         h = removeWhiteNoise(6, g);
         i = closeHoles(12, h);
         j = closeHoles(6, i);
-        k = new ArrayList<>();
-        Imgproc.findContours(j, k, l, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+        List<MatOfPoint> k = new ArrayList<>();
+        Imgproc.findContours(j, k, l, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
         approxCurve = new MatOfPoint2f();
-        o = new ArrayList<>();
-        for (int n = 0; n < k.size(); n++) {
-            //Convert contours(i) from MatOfPoint to MatOfPoint2f
-            MatOfPoint2f contour2f = new MatOfPoint2f(k.get(n).toArray());
-            double approxDistance = Imgproc.arcLength(contour2f, true) * 0.02;
-            Imgproc.approxPolyDP(contour2f, approxCurve, approxDistance, true);}
-        MatOfPoint points;
-        points = new MatOfPoint(approxCurve.toArray());
-        List<Point> m;
-        m = points.toList();//Idk what size this is or what it looks like
-        double x1 = m.get(0).x;
-        double y1 = m.get(0).y;
-        double x2 = m.get(1).x;
-        double y2 = m.get(1).y;
-        if((calcArea(Math.abs(x1-x2),Math.abs(y1-y2))>100)&&(Math.abs(x1-x2)*.8>Math.abs(y1-y2))){
-            o.add(Arrays.asList(new Point((x1+x2)/2,(y1+y2)/2)));
+        ArrayList<Rect> o = new ArrayList<Rect>();
+//        for (int n = 0; n < k.size(); n++) {
+//            //Convert contours(i) from MatOfPoint to MatOfPoint2f
+//            MatOfPoint2f contour2f = new MatOfPoint2f(k.get(n).toArray());
+//            double approxDistance = Imgproc.arcLength(contour2f, true) * 0.02;}
+        ArrayList<Rect> points = new ArrayList<Rect>();
+        for (MatOfPoint qq : k) {
+            Rect boundingRect = Imgproc.boundingRect(qq);
+            double x1 = boundingRect.x;
+            double y1 = boundingRect.y;
+            double x2 = boundingRect.x + boundingRect.width;
+            double y2 = boundingRect.y+ boundingRect.height;
+            if((calcArea(Math.abs(x1-x2),Math.abs(y1-y2))>100)&&(Math.abs(x1-x2)*.8>Math.abs(y1-y2))){
+                o.add(boundingRect);
+            }
         }
         return o;
-    }
-}
+    }}
