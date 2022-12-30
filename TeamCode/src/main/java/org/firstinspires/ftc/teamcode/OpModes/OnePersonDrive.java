@@ -23,14 +23,9 @@ public class OnePersonDrive extends LinearOpMode {
     private long startTime;
 
     private final long LIFT_TIME_OUT = 1500;
+    private final double ROTATE_UPSIDE = RobotConstants.ROTATE_UPSIDE, ROTATE_DOWNSIDE = RobotConstants.ROTATE_DOWNSIDE, CLAW_OPEN = RobotConstants.CLAW_OPEN, CLAW_CLOSE = RobotConstants.CLAW_CLOSE, LIFT_ERROR = RobotConstants.LIFT_ERROR;
 
-    private final double ROTATE_UPSIDE = 1, ROTATE_DOWNSIDE = -1, CLAW_OPEN = 0.65, CLAW_CLOSE = 0;
-
-    private final int TALL = 2000, MEDIUM = 160, LOW = 1800,
-                    ARM_FLIPPED = 950, ARM_SHORT = 150,
-                    LIFT_VELOCITY = 1440*2, ARM_VELOCITY = (int)(1440*2 *0.8),
-                    LIFT_MAXIMUM = 2000, LIFT_MINIMUM = 0;
-
+    private final int TALL = RobotConstants.TALL, MEDIUM = RobotConstants.MEDIUM, LOW = RobotConstants.LOW, CONE_STACK = RobotConstants.CONE_STACK, ARM_FLIPPED = RobotConstants.ARM_FLIPPED, ARM_SHORT = RobotConstants.ARM_SHORT, LIFT_VELOCITY = RobotConstants.LIFT_VELOCITY, ARM_VELOCITY = RobotConstants.ARM_VELOCITY, LIFT_MAXIMUM = RobotConstants.LIFT_MAXIMUM, LIFT_MINIMUM = RobotConstants.LIFT_MINIMUM;
     /**
      * IMPORTANT NOTES:
      *

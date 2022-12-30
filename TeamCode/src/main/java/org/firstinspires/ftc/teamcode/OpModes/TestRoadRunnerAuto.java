@@ -56,10 +56,10 @@ public class TestRoadRunnerAuto extends LinearOpMode {
 
     private int conesInStack = 5;
 
-    private final double ROTATE_UPSIDE = 1, ROTATE_DOWNSIDE = -1, CLAW_OPEN = 0.65, CLAW_CLOSE = 0;
 
-    private final int TALL = 2000, MEDIUM = 160, LOW = 1800, CONE_STACK = 1100,
-            ARM_FLIPPED = 950, ARM_SHORT = 150;
+    private final double ROTATE_UPSIDE = RobotConstants.ROTATE_UPSIDE, ROTATE_DOWNSIDE = RobotConstants.ROTATE_DOWNSIDE, CLAW_OPEN = RobotConstants.CLAW_OPEN, CLAW_CLOSE = RobotConstants.CLAW_CLOSE, LIFT_ERROR = RobotConstants.LIFT_ERROR;
+
+    private final int TALL = RobotConstants.TALL, MEDIUM = RobotConstants.MEDIUM, LOW = RobotConstants.LOW, CONE_STACK = RobotConstants.CONE_STACK, ARM_FLIPPED = RobotConstants.ARM_FLIPPED, ARM_SHORT = RobotConstants.ARM_SHORT, LIFT_VELOCITY = RobotConstants.LIFT_VELOCITY, ARM_VELOCITY = RobotConstants.ARM_VELOCITY, LIFT_MAXIMUM = RobotConstants.LIFT_MAXIMUM, LIFT_MINIMUM = RobotConstants.LIFT_MINIMUM;
 
     private Pose2d tallPolePose = new Pose2d(-2, 52, Math.toRadians(-45));
 
@@ -73,9 +73,12 @@ public class TestRoadRunnerAuto extends LinearOpMode {
         sleep(300);
         initialDrive(); // drives to the tall pole tile
         for (int counter = 0; counter < 1; counter++) {
+            liftToPositionAndFlip(TALL, ARM_FLIPPED + 200, ROTATE_DOWNSIDE); // puts cone on pole
+            /*
             arm.setPower(0.3); // lowers arm on pole
-            sleep(300);
+            sleep(500);
             arm.setPower(0);
+             */
             claw.setPosition(CLAW_OPEN); // releases cone
             /*
             arm.setPower(-0.4); // lifts arm off pole
@@ -94,17 +97,22 @@ public class TestRoadRunnerAuto extends LinearOpMode {
             conesInStack--;
             liftToPositionAndFlip(TALL, ARM_FLIPPED - 300, ROTATE_DOWNSIDE, driveToTallPole); // flips up and drives to tall pole
         }
+        liftToPositionAndFlip(TALL, ARM_FLIPPED + 200, ROTATE_DOWNSIDE); // puts cone on pole
+        /*
         arm.setPower(0.3); // lowers arm on pole
         sleep(300);
         arm.setPower(0);
+        */
         claw.setPosition(CLAW_OPEN); // releases cone
+        /*
         arm.setPower(-0.4); // lifts arm off pole
         sleep(300);
         arm.setPower(0);
         claw.setPosition(CLAW_CLOSE); // closes claw to avoid any wire issues
-        liftToPositionAndFlip(0, 50, ROTATE_UPSIDE, turnToStartingWall); // returns lift to lowered position and turns to initial heading
-        claw.setPosition(CLAW_OPEN); // opens claw to avoid hitting any junctions
-        sleep(300);
+         */
+        liftToPositionAndFlip(0, 100, ROTATE_UPSIDE, turnToStartingWall); // returns lift to lowered position and turns to initial heading
+        //claw.setPosition(CLAW_OPEN); // opens claw to avoid hitting any junctions
+        //sleep(300);
         switch (positionToGo) {
             case 1:
                 drive.followTrajectory(parking1);
@@ -116,9 +124,6 @@ public class TestRoadRunnerAuto extends LinearOpMode {
                 drive.followTrajectory(parking3);
                 break;
         }
-        arm.setPower(-0.5); // puts arm at zero position for driver mode
-        sleep(300);
-        arm.setPower(0);
     }
 
     public void initialDrive() {
@@ -178,6 +183,7 @@ public class TestRoadRunnerAuto extends LinearOpMode {
         int armVelocity = (int)(1440 * 0.8);
         long startTime = System.currentTimeMillis();
         long timeOut = 2500;
+        drive.followTrajectoryAsync(trajectory);
         leftLift.setTargetPosition(liftPosition);
         leftLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftLift.setVelocity(liftVelocity);
@@ -188,7 +194,6 @@ public class TestRoadRunnerAuto extends LinearOpMode {
         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         arm.setVelocity(armVelocity);
         rotate.setPosition(rotatePosition);
-        drive.followTrajectoryAsync(trajectory);
         while(arm.isBusy()) {
             if (System.currentTimeMillis()-startTime>timeOut) {
                 break;
@@ -207,6 +212,9 @@ public class TestRoadRunnerAuto extends LinearOpMode {
             }
             drive.update();
         }
+        while (drive.isBusy()) {
+            drive.update();
+        }
         leftLift.setPower(0);
         leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightLift.setPower(0);
@@ -214,9 +222,6 @@ public class TestRoadRunnerAuto extends LinearOpMode {
         arm.setPower(0);
         arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         liftInMotion = false;
-        while (drive.isBusy()) {
-            drive.update();
-        }
     }
 
     public int getConeStackHeight() {
