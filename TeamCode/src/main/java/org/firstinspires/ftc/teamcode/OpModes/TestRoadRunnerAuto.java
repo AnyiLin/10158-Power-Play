@@ -73,13 +73,14 @@ public class TestRoadRunnerAuto extends LinearOpMode {
         sleep(300);
         initialDrive(); // drives to the tall pole tile
         for (int counter = 0; counter < 1; counter++) {
-            liftToPositionAndFlip(TALL, ARM_FLIPPED + 200, ROTATE_DOWNSIDE); // puts cone on pole
+            //liftToPositionAndFlip(TALL, ARM_FLIPPED + 200, ROTATE_DOWNSIDE); // puts cone on pole
             /*
             arm.setPower(0.3); // lowers arm on pole
             sleep(500);
             arm.setPower(0);
              */
             claw.setPosition(CLAW_OPEN); // releases cone
+            sleep(300);
             /*
             arm.setPower(-0.4); // lifts arm off pole
             sleep(300);
@@ -95,15 +96,16 @@ public class TestRoadRunnerAuto extends LinearOpMode {
             leftLift.setPower(0);
             rightLift.setPower(0);
             conesInStack--;
-            liftToPositionAndFlip(TALL, ARM_FLIPPED - 300, ROTATE_DOWNSIDE, driveToTallPole); // flips up and drives to tall pole
+            liftToPositionAndFlip(TALL, ARM_FLIPPED, ROTATE_DOWNSIDE, driveToTallPole); // flips up and drives to tall pole
         }
-        liftToPositionAndFlip(TALL, ARM_FLIPPED + 200, ROTATE_DOWNSIDE); // puts cone on pole
+        //liftToPositionAndFlip(TALL, ARM_FLIPPED + 200, ROTATE_DOWNSIDE); // puts cone on pole
         /*
         arm.setPower(0.3); // lowers arm on pole
         sleep(300);
         arm.setPower(0);
         */
         claw.setPosition(CLAW_OPEN); // releases cone
+        sleep(300);
         /*
         arm.setPower(-0.4); // lifts arm off pole
         sleep(300);
@@ -129,7 +131,7 @@ public class TestRoadRunnerAuto extends LinearOpMode {
     public void initialDrive() {
         drive.followTrajectory(initialDrive1);
         drive.followTrajectory(initialDrive2);
-        liftToPositionAndFlip(TALL, ARM_FLIPPED - 300, ROTATE_DOWNSIDE, turnToTallPole); // flips up and drives to tall pole
+        liftToPositionAndFlip(TALL, ARM_FLIPPED, ROTATE_DOWNSIDE, turnToTallPole); // flips up and drives to tall pole
     }
 
     public void driveToConeStack() {

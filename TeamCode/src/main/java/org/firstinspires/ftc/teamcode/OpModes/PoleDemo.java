@@ -26,7 +26,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Hardware.Sensors.Camera.OpenCV.VisionPipelines.AprilTagDetectionPipeline;
-import org.firstinspires.ftc.teamcode.Hardware.Sensors.Camera.OpenCV.VisionPipelines.PoleDetectionPipeline;
+import org.firstinspires.ftc.teamcode.Hardware.Sensors.Camera.OpenCV.VisionPipelines.*;
 import org.opencv.core.Point;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -36,9 +36,10 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 import java.util.List;
 
-@TeleOp (name = "Pole Demo", group = "Other")
-public class PoleDemo extends LinearOpMode
+//@TeleOp (name = "Pole Demo", group = "Other")
+public class PoleDemo// extends LinearOpMode
 {
+    /*
     OpenCvCamera camera;
     PoleDetectionPipeline poleDetectionPipeline;
 
@@ -78,4 +79,5 @@ public class PoleDemo extends LinearOpMode
             sleep(20);
         }
     }
+     */
 }
