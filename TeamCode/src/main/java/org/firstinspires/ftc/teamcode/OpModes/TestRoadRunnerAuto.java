@@ -234,7 +234,8 @@ public class TestRoadRunnerAuto extends LinearOpMode {
                 .build();
         driveToTallPole = drive.trajectoryBuilder(driveToConeStack2.end())
                 .lineToSplineHeading(new Pose2d(0, 51, Math.toRadians(0)))
-                .splineToLinearHeading(tallPolePose, tallPolePose.getHeading())
+                //.splineToSplineHeading(tallPolePose, tallPolePose.getHeading())
+                .splineTo(vectorFromPose(tallPolePose), tallPolePose.getHeading()+Math.PI)
                 .build();
         turnToStartingWall = drive.trajectoryBuilder(driveToTallPole.end())
                 .lineToSplineHeading(new Pose2d(0, 50, Math.toRadians(-90)))
@@ -250,6 +251,10 @@ public class TestRoadRunnerAuto extends LinearOpMode {
                 .lineToSplineHeading(new Pose2d(20, 50, Math.toRadians(-90)))
                 .splineToConstantHeading(new Vector2d(20,30), Math.toRadians(-90))
                 .build();
+    }
+
+    public Vector2d vectorFromPose(Pose2d pose) {
+        return new Vector2d(pose.getX(), pose.getY());
     }
 
     @Override
