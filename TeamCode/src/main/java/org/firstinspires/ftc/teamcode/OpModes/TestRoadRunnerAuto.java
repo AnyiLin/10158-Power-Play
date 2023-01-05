@@ -67,11 +67,7 @@ public class TestRoadRunnerAuto extends LinearOpMode {
     private Pose2d tallPolePose = new Pose2d(-2.5, 54, Math.toRadians(-45));
 
     public void autonomous() {
-        leftLift.setPower(1); // lifts lift slightly to grab cone better
-        rightLift.setPower(1);
-        sleep(100);
-        leftLift.setPower(0);
-        rightLift.setPower(0);
+        liftToPositionAndFlip(200, 0, ROTATE_UPSIDE); // lifts lift slightly to grab cone better
         claw.setPosition(CLAW_CLOSE); // grabs cone
         sleep(300);
         initialDrive(); // drives to the tall pole tile
