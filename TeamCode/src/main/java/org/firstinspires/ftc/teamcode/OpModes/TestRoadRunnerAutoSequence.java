@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Hardware.Sensors.Camera.OpenCV.VisionPipelines.AprilTagDetectionPipeline;
+import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.openftc.apriltag.AprilTagDetection;
@@ -21,8 +22,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-@Autonomous(name = "Test Road Runner Right Auto", group = "Other")
-public class TestRoadRunnerAuto extends LinearOpMode {
+@Autonomous(name = "Test Road Runner Right Auto Sequence", group = "Other")
+public class TestRoadRunnerAutoSequence extends LinearOpMode {
 
     private OpenCvCamera camera;
     private AprilTagDetectionPipeline aprilTagDetectionPipeline;
@@ -47,7 +48,7 @@ public class TestRoadRunnerAuto extends LinearOpMode {
 
     private Trajectory initialDrive1, initialDrive2, turnToTallPole, turnToConeStack, driveToConeStack1, driveToConeStack2, driveToTallPole1, driveToTallPole2,turnToStartingWall, parking1, parking2, parking3;
 
-    private TrajectorySequence initialDrive, driveToConeStack, driveToTallPole;
+    private TrajectorySequence initialDrive, getCone, driveToTallPole;
 
     private DcMotorEx leftFront, leftRear, rightFront, rightRear, strafeEncoder, leftLift, rightLift, arm, liftMotor;
 
@@ -74,19 +75,17 @@ public class TestRoadRunnerAuto extends LinearOpMode {
         rightLift.setPower(0);
         claw.setPosition(CLAW_CLOSE); // grabs cone
         sleep(300);
-        initialDrive(); // drives to the tall pole tile
+        drive.followTrajectorySequence(initialDrive);
         for (int counter = 0; counter < 1; counter++) {
             sleep(500);
             claw.setPosition(CLAW_OPEN); // releases cone
             sleep(500);
-            liftToPositionAndFlip(getConeStackHeight(), 0, ROTATE_UPSIDE, turnToConeStack); // lift lift to cone stack height and turn to cone stack
-            driveToConeStack(); // drives to cone stack
+            drive.followTrajectorySequence(getCone);
             claw.setPosition(CLAW_CLOSE); // grab cone
             sleep(300);
             liftToPositionAndFlip(getConeStackHeight()+800, 0, ROTATE_UPSIDE); // lifts from stack
             conesInStack--;
-            liftToPositionAndFlip(TALL, ARM_FLIPPED-30, ROTATE_DOWNSIDE, driveToTallPole1); // flips up and drives to tall pole
-            liftToPositionAndFlip(TALL, ARM_FLIPPED-30, ROTATE_DOWNSIDE, driveToTallPole2); // flips up and drives to tall pole
+            drive.followTrajectorySequence(driveToTallPole);
         }
         sleep(500);
         claw.setPosition(CLAW_OPEN); // releases cone
@@ -118,8 +117,8 @@ public class TestRoadRunnerAuto extends LinearOpMode {
 
     public void liftToPositionAndFlip(int liftPosition, int armPosition, double rotatePosition) {
         liftInMotion = true;
-        int liftVelocity = 1440*2;
-        int armVelocity = (int)(1440 * 0.8);
+        int liftVelocity = LIFT_VELOCITY;
+        int armVelocity = ARM_VELOCITY;
         long startTime = System.currentTimeMillis();
         long timeOut = 2500;
         leftLift.setTargetPosition(liftPosition);
@@ -158,8 +157,8 @@ public class TestRoadRunnerAuto extends LinearOpMode {
 
     public void liftToPositionAndFlip(int liftPosition, int armPosition, double rotatePosition, Trajectory trajectory) {
         liftInMotion = true;
-        int liftVelocity = 1440*2;
-        int armVelocity = (int)(1440 * 0.8);
+        int liftVelocity = LIFT_VELOCITY;
+        int armVelocity = ARM_VELOCITY;
         long startTime = System.currentTimeMillis();
         long timeOut = 2500;
         drive.followTrajectoryAsync(trajectory);
@@ -205,8 +204,8 @@ public class TestRoadRunnerAuto extends LinearOpMode {
 
     public void liftToPositionAndFlip(int liftPosition, int armPosition, double rotatePosition, TrajectorySequence trajectory) {
         liftInMotion = true;
-        int liftVelocity = 1440*2;
-        int armVelocity = (int)(1440 * 0.8);
+        int liftVelocity = LIFT_VELOCITY;
+        int armVelocity = ARM_VELOCITY;
         long startTime = System.currentTimeMillis();
         long timeOut = 2500;
         drive.followTrajectorySequenceAsync(trajectory);
@@ -250,6 +249,32 @@ public class TestRoadRunnerAuto extends LinearOpMode {
         liftInMotion = false;
     }
 
+    public void startLift(int liftPosition, int armPosition, double rotatePosition) {
+        liftInMotion = true;
+        int liftVelocity = LIFT_VELOCITY;
+        int armVelocity = ARM_VELOCITY;
+        leftLift.setTargetPosition(liftPosition);
+        leftLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftLift.setVelocity(liftVelocity);
+        rightLift.setTargetPosition(liftPosition);
+        rightLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightLift.setVelocity(liftVelocity);
+        arm.setTargetPosition(armPosition);
+        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        arm.setVelocity(armVelocity);
+        rotate.setPosition(rotatePosition);
+    }
+
+    public void stopLift() {
+        leftLift.setPower(0);
+        leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightLift.setPower(0);
+        rightLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        arm.setPower(0);
+        arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        liftInMotion = false;
+    }
+
     public int getConeStackHeight() {
         return CONE_STACK - 180 * (5 - conesInStack);
     }
@@ -261,14 +286,33 @@ public class TestRoadRunnerAuto extends LinearOpMode {
     public void buildTrajectories() {
         drive = new SampleMecanumDrive(hardwareMap);
 
+        initialDrive = drive.trajectorySequenceBuilder(new Pose2d())
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(400, 0, ROTATE_UPSIDE))
+                .lineTo(new Vector2d(-3,20))
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> stopLift())
+                .lineTo(new Vector2d(-2,40))
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(TALL, ARM_FLIPPED-30, ROTATE_DOWNSIDE))
+                .lineToSplineHeading(tallPolePose)
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> stopLift())
+                .build();
+        getCone = drive.trajectorySequenceBuilder(initialDrive.end())
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(getConeStackHeight(), 0, ROTATE_UPSIDE))
+                .lineToSplineHeading(new Pose2d(0, 51, Math.toRadians(0)))
+                .lineToSplineHeading(new Pose2d(24.5, 51, Math.toRadians(0)),
+                        SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .UNSTABLE_addTemporalMarkerOffset(-0.5,()-> stopLift())
+                .build();
+        driveToTallPole = drive.trajectorySequenceBuilder(getCone.end())
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(TALL, ARM_FLIPPED-30, ROTATE_DOWNSIDE))
+                .lineToSplineHeading(new Pose2d(8, 51, Math.toRadians(0)))
+                .lineToSplineHeading(tallPolePose)
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> stopLift())
+                .build();
         initialDrive1 = drive.trajectoryBuilder(new Pose2d())
                 .lineTo(new Vector2d(-3,20))
                 .build();
         initialDrive2 = drive.trajectoryBuilder(initialDrive1.end())
-                .lineTo(new Vector2d(-2,40))
-                .build();
-        initialDrive = drive.trajectorySequenceBuilder(new Pose2d())
-                .lineTo(new Vector2d(-3,20))
                 .lineTo(new Vector2d(-2,40))
                 .build();
         turnToTallPole = drive.trajectoryBuilder(initialDrive2.end())
@@ -283,10 +327,6 @@ public class TestRoadRunnerAuto extends LinearOpMode {
         driveToConeStack2 = drive.trajectoryBuilder(driveToConeStack1.end())
                 .lineToSplineHeading(new Pose2d(24.5, 51, Math.toRadians(0)))
                 .build();
-        driveToConeStack = drive.trajectorySequenceBuilder(turnToConeStack.end())
-                .lineToSplineHeading(new Pose2d(20, 51, Math.toRadians(0)))
-                .lineToSplineHeading(new Pose2d(24.5, 51, Math.toRadians(0)))
-                .build();
         driveToTallPole1 = drive.trajectoryBuilder(driveToConeStack2.end())
                 .lineToSplineHeading(new Pose2d(8, 51, Math.toRadians(0)))
                 //.splineToLinearHeading(tallPolePose, tallPolePose.getHeading())
@@ -295,11 +335,12 @@ public class TestRoadRunnerAuto extends LinearOpMode {
         driveToTallPole2 = drive.trajectoryBuilder(driveToTallPole1.end())
                 .lineToSplineHeading(tallPolePose)
                 .build();
-        driveToTallPole = drive.trajectorySequenceBuilder(driveToConeStack.end())
-                .lineToSplineHeading(new Pose2d(8, 51, Math.toRadians(0)))
-                .lineToSplineHeading(tallPolePose)
-                .build();
+        /*
         turnToStartingWall = drive.trajectoryBuilder(driveToTallPole2.end())
+                .lineToSplineHeading(new Pose2d(0, 50, Math.toRadians(-90)))
+                .build();
+         */
+        turnToStartingWall = drive.trajectoryBuilder(driveToTallPole.end())
                 .lineToSplineHeading(new Pose2d(0, 50, Math.toRadians(-90)))
                 .build();
         parking1 = drive.trajectoryBuilder(turnToStartingWall.end())
