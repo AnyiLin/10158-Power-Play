@@ -77,8 +77,7 @@ public class TestRoadRunnerAutoSequence extends LinearOpMode {
 
         liftToPositionAndFlip(TALL, ARM_FLIPPED+300, ROTATE_DOWNSIDE); // dunks cone
         claw.setPosition(CLAW_OPEN); // releases cone
-        sleep(500);
-        liftToPositionAndFlip(TALL, ARM_FLIPPED, ROTATE_DOWNSIDE); // lifts arm
+        sleep(300);
         drive.followTrajectorySequence(getConeOne);
         claw.setPosition(CLAW_CLOSE); // grab cone
         sleep(300);
@@ -88,8 +87,7 @@ public class TestRoadRunnerAutoSequence extends LinearOpMode {
 
         liftToPositionAndFlip(TALL, ARM_FLIPPED+300, ROTATE_DOWNSIDE); // dunks cone
         claw.setPosition(CLAW_OPEN); // releases cone
-        sleep(500);
-        liftToPositionAndFlip(TALL, ARM_FLIPPED, ROTATE_DOWNSIDE); // lifts arm
+        sleep(300);
         drive.followTrajectorySequence(getConeTwo);
         claw.setPosition(CLAW_CLOSE); // grab cone
         sleep(300);
@@ -99,8 +97,8 @@ public class TestRoadRunnerAutoSequence extends LinearOpMode {
 
         liftToPositionAndFlip(TALL, ARM_FLIPPED+150, ROTATE_DOWNSIDE); // dunks cone
         claw.setPosition(CLAW_OPEN); // releases cone
-        sleep(500);
-        liftToPositionAndFlip(TALL, ARM_FLIPPED, ROTATE_DOWNSIDE); // dunks cone
+        sleep(300);
+        liftToPositionAndFlip(TALL, ARM_FLIPPED, ROTATE_DOWNSIDE); // lifts arm
         liftToPositionAndFlip(10, 50, ROTATE_UPSIDE, turnToStartingWall); // returns lift to lowered position and turns to initial heading
         switch (positionToGo) {
             case 1:
@@ -307,7 +305,8 @@ public class TestRoadRunnerAutoSequence extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> stopLift())
                 .build();
         getConeOne = drive.trajectorySequenceBuilder(initialDrive.end())
-                .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(getConeStackHeight(), 0, ROTATE_UPSIDE))
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(getConeStackHeight(), 0, ROTATE_DOWNSIDE))
+                .UNSTABLE_addTemporalMarkerOffset(0.5,()-> startLift(getConeStackHeight(), 0, ROTATE_UPSIDE))
                 .lineToSplineHeading(new Pose2d(0, 51, Math.toRadians(0)),
                         SampleMecanumDrive.getVelocityConstraint(18, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
@@ -318,16 +317,15 @@ public class TestRoadRunnerAutoSequence extends LinearOpMode {
                 .build();
         driveToTallPoleOne = drive.trajectorySequenceBuilder(getConeOne.end())
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(TALL, ARM_FLIPPED-100, ROTATE_DOWNSIDE))
-                .lineToSplineHeading(new Pose2d(8, 51, Math.toRadians(0)),
-                        SampleMecanumDrive.getVelocityConstraint(18, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .lineToSplineHeading(new Pose2d(8, 51, Math.toRadians(0)))
                 .lineToSplineHeading(tallPolePose2,
                         SampleMecanumDrive.getVelocityConstraint(18, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> stopLift())
                 .build();
         getConeTwo = drive.trajectorySequenceBuilder(driveToTallPoleOne.end())
-                .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(getConeStackHeight(), 0, ROTATE_UPSIDE))
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(getConeStackHeight(), 0, ROTATE_DOWNSIDE))
+                .UNSTABLE_addTemporalMarkerOffset(0.5,()-> startLift(getConeStackHeight(), 0, ROTATE_UPSIDE))
                 .lineToSplineHeading(new Pose2d(0, 51, Math.toRadians(0)),
                         SampleMecanumDrive.getVelocityConstraint(18, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
@@ -338,9 +336,7 @@ public class TestRoadRunnerAutoSequence extends LinearOpMode {
                 .build();
         driveToTallPoleTwo = drive.trajectorySequenceBuilder(getConeTwo.end())
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(TALL, ARM_FLIPPED-100, ROTATE_DOWNSIDE))
-                .lineToSplineHeading(new Pose2d(8, 51, Math.toRadians(0)),
-                        SampleMecanumDrive.getVelocityConstraint(18, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .lineToSplineHeading(new Pose2d(8, 51, Math.toRadians(0)))
                 .lineToSplineHeading(tallPolePose2,
                         SampleMecanumDrive.getVelocityConstraint(18, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
