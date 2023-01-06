@@ -46,9 +46,7 @@ public class TestRoadRunnerAutoSequence extends LinearOpMode {
 
     private SampleMecanumDrive drive;
 
-    private Trajectory turnToStartingWall, parking1, parking2, parking3;
-
-    private TrajectorySequence initialDrive, getConeOne, driveToTallPoleOne, getConeTwo, driveToTallPoleTwo;
+    private TrajectorySequence initialDrive, getConeOne, getConeTwo, parkingOne, parkingTwo, parkingThree;
 
     private DcMotorEx leftFront, leftRear, rightFront, rightRear, strafeEncoder, leftLift, rightLift, arm, liftMotor;
 
@@ -66,184 +64,28 @@ public class TestRoadRunnerAutoSequence extends LinearOpMode {
 
     private final int TALL = RobotConstants.TALL, MEDIUM = RobotConstants.MEDIUM, LOW = RobotConstants.LOW, CONE_STACK = RobotConstants.CONE_STACK, ARM_FLIPPED = RobotConstants.ARM_FLIPPED, ARM_SHORT = RobotConstants.ARM_SHORT, LIFT_VELOCITY = RobotConstants.LIFT_VELOCITY, ARM_VELOCITY = RobotConstants.ARM_VELOCITY, LIFT_MAXIMUM = RobotConstants.LIFT_MAXIMUM, LIFT_MINIMUM = RobotConstants.LIFT_MINIMUM;
 
-    private Pose2d tallPolePose = new Pose2d(-0.5, 54, Math.toRadians(-45));
+    private Pose2d tallPolePose = new Pose2d(-1, 53.5, Math.toRadians(-45));
     private Pose2d tallPolePose2 = new Pose2d(-2.5, 52, Math.toRadians(-45));
-    private Pose2d tallPolePose3 = new Pose2d(-2, 51, Math.toRadians(-45));
+    private Pose2d tallPolePose3 = new Pose2d(-1.5, 51.5, Math.toRadians(-45));
 
     public void autonomous() {
-        liftToPositionAndFlip(200, 0, ROTATE_UPSIDE); // lifts lift slightly to grab cone better
-        claw.setPosition(CLAW_CLOSE); // grabs cone
-        sleep(400);
         drive.followTrajectorySequence(initialDrive);
 
-        liftToPositionAndFlip(TALL, ARM_FLIPPED+300, ROTATE_DOWNSIDE); // dunks cone
-        claw.setPosition(CLAW_OPEN); // releases cone
         drive.followTrajectorySequence(getConeOne);
-        claw.setPosition(CLAW_CLOSE); // grab cone
-        sleep(400);
-        liftToPositionAndFlip(getConeStackHeight()+800, 0, ROTATE_UPSIDE); // lifts from stack
-        conesInStack--;
-        drive.followTrajectorySequence(driveToTallPoleOne);
 
-        liftToPositionAndFlip(TALL, ARM_FLIPPED+300, ROTATE_DOWNSIDE); // dunks cone
-        claw.setPosition(CLAW_OPEN); // releases cone
         drive.followTrajectorySequence(getConeTwo);
-        claw.setPosition(CLAW_CLOSE); // grab cone
-        sleep(400);
-        liftToPositionAndFlip(getConeStackHeight()+800, 0, ROTATE_UPSIDE); // lifts from stack
-        conesInStack--;
-        drive.followTrajectorySequence(driveToTallPoleTwo);
 
-        liftToPositionAndFlip(TALL, ARM_FLIPPED+150, ROTATE_DOWNSIDE); // dunks cone
-        claw.setPosition(CLAW_OPEN); // releases cone
-        sleep(300);
-        liftToPositionAndFlip(TALL, ARM_FLIPPED, ROTATE_DOWNSIDE); // lifts arm
-        liftToPositionAndFlip(10, 50, ROTATE_UPSIDE, turnToStartingWall); // returns lift to lowered position and turns to initial heading
         switch (positionToGo) {
             case 1:
-                drive.followTrajectory(parking1);
+                drive.followTrajectorySequence(parkingOne);
                 break;
             case 2:
-                drive.followTrajectory(parking2);
+                drive.followTrajectorySequence(parkingTwo);
                 break;
             case 3:
-                drive.followTrajectory(parking3);
+                drive.followTrajectorySequence(parkingThree);
                 break;
         }
-    }
-
-    public void liftToPositionAndFlip(int liftPosition, int armPosition, double rotatePosition) {
-        liftInMotion = true;
-        int liftVelocity = LIFT_VELOCITY;
-        int armVelocity = (int)(ARM_VELOCITY*armVelocityCoefficient);
-        long startTime = System.currentTimeMillis();
-        long timeOut = 2500;
-        rightLift.setTargetPosition(liftPosition);
-        rightLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightLift.setVelocity(liftVelocity);
-        leftLift.setTargetPosition(liftPosition);
-        leftLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftLift.setVelocity(liftVelocity);
-        arm.setTargetPosition(armPosition);
-        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        arm.setVelocity(armVelocity);
-        rotate.setPosition(rotatePosition);
-        while(arm.isBusy()) {
-            if (System.currentTimeMillis()-startTime>timeOut) {
-                break;
-            }
-        }
-        while(leftLift.isBusy()) {
-            if (System.currentTimeMillis()-startTime>timeOut) {
-                break;
-            }
-        }
-        while(rightLift.isBusy()) {
-            if (System.currentTimeMillis()-startTime>timeOut) {
-                break;
-            }
-        }
-        leftLift.setPower(0);
-        leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightLift.setPower(0);
-        rightLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        arm.setPower(0);
-        arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        liftInMotion = false;
-    }
-
-    public void liftToPositionAndFlip(int liftPosition, int armPosition, double rotatePosition, Trajectory trajectory) {
-        liftInMotion = true;
-        int liftVelocity = LIFT_VELOCITY;
-        int armVelocity = (int)(ARM_VELOCITY*armVelocityCoefficient);
-        long startTime = System.currentTimeMillis();
-        long timeOut = 2500;
-        drive.followTrajectoryAsync(trajectory);
-        leftLift.setTargetPosition(liftPosition);
-        leftLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftLift.setVelocity(liftVelocity);
-        rightLift.setTargetPosition(liftPosition);
-        rightLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightLift.setVelocity(liftVelocity);
-        arm.setTargetPosition(armPosition);
-        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        arm.setVelocity(armVelocity);
-        rotate.setPosition(rotatePosition);
-        while(arm.isBusy()) {
-            if (System.currentTimeMillis()-startTime>timeOut) {
-                break;
-            }
-            drive.update();
-        }
-        while(leftLift.isBusy()) {
-            if (System.currentTimeMillis()-startTime>timeOut) {
-                break;
-            }
-            drive.update();
-        }
-        while(rightLift.isBusy()) {
-            if (System.currentTimeMillis()-startTime>timeOut) {
-                break;
-            }
-            drive.update();
-        }
-        while (drive.isBusy()) {
-            drive.update();
-        }
-        leftLift.setPower(0);
-        leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightLift.setPower(0);
-        rightLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        arm.setPower(0);
-        arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        liftInMotion = false;
-    }
-
-    public void liftToPositionAndFlip(int liftPosition, int armPosition, double rotatePosition, TrajectorySequence trajectory) {
-        liftInMotion = true;
-        int liftVelocity = LIFT_VELOCITY;
-        int armVelocity = (int)(ARM_VELOCITY*armVelocityCoefficient);
-        long startTime = System.currentTimeMillis();
-        long timeOut = 2500;
-        drive.followTrajectorySequenceAsync(trajectory);
-        leftLift.setTargetPosition(liftPosition);
-        leftLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftLift.setVelocity(liftVelocity);
-        rightLift.setTargetPosition(liftPosition);
-        rightLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightLift.setVelocity(liftVelocity);
-        arm.setTargetPosition(armPosition);
-        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        arm.setVelocity(armVelocity);
-        rotate.setPosition(rotatePosition);
-        while(arm.isBusy()) {
-            if (System.currentTimeMillis()-startTime>timeOut) {
-                break;
-            }
-            drive.update();
-        }
-        while(leftLift.isBusy()) {
-            if (System.currentTimeMillis()-startTime>timeOut) {
-                break;
-            }
-            drive.update();
-        }
-        while(rightLift.isBusy()) {
-            if (System.currentTimeMillis()-startTime>timeOut) {
-                break;
-            }
-            drive.update();
-        }
-        while (drive.isBusy()) {
-            drive.update();
-        }
-        leftLift.setPower(0);
-        leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightLift.setPower(0);
-        rightLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        arm.setPower(0);
-        arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        liftInMotion = false;
     }
 
     public void startLift(int liftPosition, int armPosition, double rotatePosition) {
@@ -276,73 +118,102 @@ public class TestRoadRunnerAutoSequence extends LinearOpMode {
         return CONE_STACK - 180 * (5 - conesInStack);
     }
 
-    public void waitUntilLiftStopped() {
-        while (liftInMotion) {}
-    }
-
     public void buildTrajectories() {
         drive = new SampleMecanumDrive(hardwareMap);
 
         initialDrive = drive.trajectorySequenceBuilder(new Pose2d())
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(150, 0, ROTATE_UPSIDE))
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> claw.setPosition(CLAW_CLOSE))
+                .waitSeconds(0.4)
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(TALL, ARM_FLIPPED-100, ROTATE_DOWNSIDE))
-                .lineTo(new Vector2d(-2,20))
-                .lineTo(new Vector2d(-1,44))
-                .lineToSplineHeading(tallPolePose,
-                        SampleMecanumDrive.getVelocityConstraint(18, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .splineToConstantHeading(new Vector2d(-3,20), Math.toRadians(90),
+                        SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .splineToConstantHeading(new Vector2d(-1,44), Math.toRadians(90),
+                        SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .lineToSplineHeading(tallPolePose,
+                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(TALL, ARM_FLIPPED+300, ROTATE_DOWNSIDE))
+                .waitSeconds(1)
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> stopLift())
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> claw.setPosition(CLAW_OPEN))
                 .build();
         getConeOne = drive.trajectorySequenceBuilder(initialDrive.end())
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(getConeStackHeight(), 0, ROTATE_DOWNSIDE))
                 .UNSTABLE_addTemporalMarkerOffset(0.5,()-> startLift(getConeStackHeight(), 0, ROTATE_UPSIDE))
                 .lineToSplineHeading(new Pose2d(0, 51, Math.toRadians(0)),
-                        SampleMecanumDrive.getVelocityConstraint(18, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .lineToSplineHeading(new Pose2d(24.2, 51, Math.toRadians(0)),
-                        SampleMecanumDrive.getVelocityConstraint(18, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .lineToSplineHeading(new Pose2d(24.5, 51, Math.toRadians(0)),
+                        SampleMecanumDrive.getVelocityConstraint(16, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .UNSTABLE_addTemporalMarkerOffset(-0.5,()-> stopLift())
-                .build();
-        driveToTallPoleOne = drive.trajectorySequenceBuilder(getConeOne.end())
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> claw.setPosition(CLAW_CLOSE))
+                .waitSeconds(0.4)
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(getConeStackHeight()+800, 0, ROTATE_UPSIDE))
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> conesInStack--)
+                .waitSeconds(1)
                 .UNSTABLE_addTemporalMarkerOffset(0.5,()-> startLift(TALL, ARM_FLIPPED-100, ROTATE_DOWNSIDE))
                 .lineToSplineHeading(new Pose2d(8, 51, Math.toRadians(0)))
                 .lineToSplineHeading(tallPolePose2,
-                        SampleMecanumDrive.getVelocityConstraint(18, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(TALL, ARM_FLIPPED+300, ROTATE_DOWNSIDE))
+                .waitSeconds(1)
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> stopLift())
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> claw.setPosition(CLAW_OPEN))
                 .build();
-        getConeTwo = drive.trajectorySequenceBuilder(driveToTallPoleOne.end())
+        getConeTwo = drive.trajectorySequenceBuilder(getConeOne.end())
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(getConeStackHeight(), 0, ROTATE_DOWNSIDE))
                 .UNSTABLE_addTemporalMarkerOffset(0.5,()-> startLift(getConeStackHeight(), 0, ROTATE_UPSIDE))
                 .lineToSplineHeading(new Pose2d(0, 51, Math.toRadians(0)),
-                        SampleMecanumDrive.getVelocityConstraint(18, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .lineToSplineHeading(new Pose2d(24.2, 51, Math.toRadians(0)),
-                        SampleMecanumDrive.getVelocityConstraint(18, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .lineToSplineHeading(new Pose2d(24.5, 51, Math.toRadians(0)),
+                        SampleMecanumDrive.getVelocityConstraint(16, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .UNSTABLE_addTemporalMarkerOffset(-0.5,()-> stopLift())
-                .build();
-        driveToTallPoleTwo = drive.trajectorySequenceBuilder(getConeTwo.end())
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> claw.setPosition(CLAW_CLOSE))
+                .waitSeconds(0.4)
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(getConeStackHeight()+800, 0, ROTATE_UPSIDE))
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> conesInStack--)
+                .waitSeconds(1)
                 .UNSTABLE_addTemporalMarkerOffset(0.5,()-> startLift(TALL, ARM_FLIPPED-100, ROTATE_DOWNSIDE))
                 .lineToSplineHeading(new Pose2d(8, 51, Math.toRadians(0)))
                 .lineToSplineHeading(tallPolePose3,
-                        SampleMecanumDrive.getVelocityConstraint(18, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(TALL, ARM_FLIPPED+300, ROTATE_DOWNSIDE))
+                .waitSeconds(1)
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> stopLift())
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> claw.setPosition(CLAW_OPEN))
+                .build();
+        parkingOne = drive.trajectorySequenceBuilder(getConeTwo.end())
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(10, 50, ROTATE_DOWNSIDE))
+                .UNSTABLE_addTemporalMarkerOffset(0.4,()-> startLift(10, 50, ROTATE_UPSIDE))
+                .lineToSplineHeading(new Pose2d(0, 50, Math.toRadians(-90)))
+                .waitSeconds(0.5)
+                .lineToSplineHeading(new Pose2d(-20, 51, Math.toRadians(-90)))
+                .splineToConstantHeading(new Vector2d(-20,30), Math.toRadians(-90))
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> stopLift())
                 .build();
-        turnToStartingWall = drive.trajectoryBuilder(driveToTallPoleTwo.end())
+        parkingTwo = drive.trajectorySequenceBuilder(getConeTwo.end())
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(10, 50, ROTATE_DOWNSIDE))
+                .UNSTABLE_addTemporalMarkerOffset(0.5,()-> startLift(10, 50, ROTATE_UPSIDE))
                 .lineToSplineHeading(new Pose2d(0, 50, Math.toRadians(-90)))
+                .splineToConstantHeading(new Vector2d(0,30), Math.toRadians(-90))
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> stopLift())
                 .build();
-        parking1 = drive.trajectoryBuilder(turnToStartingWall.end())
-                .lineToSplineHeading(new Pose2d(-20, 50, Math.toRadians(-90)))
-                .splineToConstantHeading(new Vector2d(-20,30), Math.toRadians(-90))
-                .build();
-        parking2 = drive.trajectoryBuilder(turnToStartingWall.end())
-                .lineToSplineHeading(new Pose2d(0,30, Math.toRadians(-90)))
-                .build();
-        parking3 = drive.trajectoryBuilder(turnToStartingWall.end())
-                .lineToSplineHeading(new Pose2d(20, 50, Math.toRadians(-90)))
-                .splineToConstantHeading(new Vector2d(20,30), Math.toRadians(-90))
+        parkingThree = drive.trajectorySequenceBuilder(getConeTwo.end())
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(10, 50, ROTATE_DOWNSIDE))
+                .UNSTABLE_addTemporalMarkerOffset(0.4,()-> startLift(10, 50, ROTATE_UPSIDE))
+                .lineToSplineHeading(new Pose2d(0, 50, Math.toRadians(-90)))
+                .waitSeconds(0.5)
+                .lineToSplineHeading(new Pose2d(21.5, 51, Math.toRadians(-90)))
+                .splineToConstantHeading(new Vector2d(21.5,30), Math.toRadians(-90))
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> stopLift())
                 .build();
     }
 
