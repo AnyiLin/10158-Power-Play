@@ -63,9 +63,9 @@ public class LeftSideAutonomous extends LinearOpMode {
 
     private final int TALL = RobotConstants.TALL, MEDIUM = RobotConstants.MEDIUM, LOW = RobotConstants.LOW, CONE_STACK = RobotConstants.CONE_STACK, ARM_FLIPPED = RobotConstants.ARM_FLIPPED, ARM_SHORT = RobotConstants.ARM_SHORT, LIFT_VELOCITY = RobotConstants.LIFT_VELOCITY, ARM_VELOCITY = RobotConstants.ARM_VELOCITY, LIFT_MAXIMUM = RobotConstants.LIFT_MAXIMUM, LIFT_MINIMUM = RobotConstants.LIFT_MINIMUM;
 
-    private Pose2d tallPolePose = new Pose2d(-1, -53.5, Math.toRadians(45));
-    private Pose2d tallPolePose2 = new Pose2d(-2.5, -52, Math.toRadians(45));
-    private Pose2d tallPolePose3 = new Pose2d(-1.5, -51.5, Math.toRadians(45));
+    private Pose2d tallPolePose = new Pose2d(-1, -53.5, Math.toRadians(-45));
+    private Pose2d tallPolePose2 = new Pose2d(-2.5, -52, Math.toRadians(-45));
+    private Pose2d tallPolePose3 = new Pose2d(-0.5, -52.5, Math.toRadians(-45));
 
     public void autonomous() {
         // this should be pretty self explanatory. For questions on what the trajectory sequences do, see a bit below
@@ -126,11 +126,11 @@ public class LeftSideAutonomous extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> claw.setPosition(CLAW_CLOSE)) // close claw on cone
                 .waitSeconds(0.4) // give the claw time to close
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(TALL, ARM_FLIPPED-100, ROTATE_DOWNSIDE)) // raise lift up and flit arm. gets cone out of the way of the ground junction and poles, and this needs to be done anyways, so easier sooner rather than later
-                .splineToConstantHeading(new Vector2d(-3,-20), Math.toRadians(-90), // these two splines strafe the robot close to the tall pole tile, avoiding poles and junctions. They have a reduced speed because without them they're too fast and mess with the localization a bit (the localization means the drive encoders)
-                        SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .lineToSplineHeading(new Pose2d(-3,20, Math.toRadians(0)), // these two trajectories strafe the robot close to the tall pole tile, avoiding poles and junctions. They have a reduced speed because without them they're too fast and mess with the localization a bit (the localization means the drive encoders)
+                        SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .splineToConstantHeading(new Vector2d(-1,-44), Math.toRadians(-90),
-                        SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .lineToSplineHeading(tallPolePose, // drives and turns to the tall pole at a reduced speed because turning fast seems to really mess up the localization
                         SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
@@ -156,7 +156,7 @@ public class LeftSideAutonomous extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> conesInStack--) // decrements the variable keeping track of the number of cones in the stack
                 .waitSeconds(1) // gives the lift time to lift the cone off of the stack
                 .UNSTABLE_addTemporalMarkerOffset(0.5,()-> startLift(TALL, ARM_FLIPPED-100, ROTATE_DOWNSIDE)) // raises the lift and flips the arm after a short delay to avoid hitting the wall with the arm
-                .lineToSplineHeading(new Pose2d(0, -51, Math.toRadians(0))) // moves back to the center of the tall pole tile
+                .lineToSplineHeading(new Pose2d(8, -51, Math.toRadians(0))) // moves back to the center of the tall pole tile
                 .lineToSplineHeading(tallPolePose2, // drives and turns to the tall pole at a reduced speed because it turns and the localization doesn't like high speed turns
                         SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
@@ -181,7 +181,7 @@ public class LeftSideAutonomous extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> conesInStack--) // decrements the variable keeping track of the number of cones in the stack
                 .waitSeconds(1) // gives the lift time to lift the cone off of the stack
                 .UNSTABLE_addTemporalMarkerOffset(0.5,()-> startLift(TALL, ARM_FLIPPED-100, ROTATE_DOWNSIDE)) // raises the lift and flips the arm after a short delay to avoid hitting the wall with the arm
-                .lineToSplineHeading(new Pose2d(0, -51, Math.toRadians(0))) // moves back to the center of the tall pole tile
+                .lineToSplineHeading(new Pose2d(8, -51, Math.toRadians(0))) // moves back to the center of the tall pole tile
                 .lineToSplineHeading(tallPolePose3, // drives and turns to the tall pole at a reduced speed because it turns and the localization doesn't like high speed turns
                         SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
