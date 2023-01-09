@@ -63,9 +63,9 @@ public class LeftSideAutonomous extends LinearOpMode {
 
     private final int TALL = RobotConstants.TALL, MEDIUM = RobotConstants.MEDIUM, LOW = RobotConstants.LOW, CONE_STACK = RobotConstants.CONE_STACK, ARM_FLIPPED = RobotConstants.ARM_FLIPPED, ARM_SHORT = RobotConstants.ARM_SHORT, LIFT_VELOCITY = RobotConstants.LIFT_VELOCITY, ARM_VELOCITY = RobotConstants.ARM_VELOCITY, LIFT_MAXIMUM = RobotConstants.LIFT_MAXIMUM, LIFT_MINIMUM = RobotConstants.LIFT_MINIMUM;
 
-    private Pose2d tallPolePose = new Pose2d(-1, -53.5, Math.toRadians(-45));
-    private Pose2d tallPolePose2 = new Pose2d(-2.5, -52, Math.toRadians(-45));
-    private Pose2d tallPolePose3 = new Pose2d(-0.5, -52.5, Math.toRadians(-45));
+    private Pose2d tallPolePose = new Pose2d(0.5, -53.5, Math.toRadians(45));
+    private Pose2d tallPolePose2 = new Pose2d(-1, -52, Math.toRadians(45));
+    private Pose2d tallPolePose3 = new Pose2d(-0.5, -52.5, Math.toRadians(45));
 
     public void autonomous() {
         // this should be pretty self explanatory. For questions on what the trajectory sequences do, see a bit below
@@ -126,7 +126,7 @@ public class LeftSideAutonomous extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> claw.setPosition(CLAW_CLOSE)) // close claw on cone
                 .waitSeconds(0.4) // give the claw time to close
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(TALL, ARM_FLIPPED-100, ROTATE_DOWNSIDE)) // raise lift up and flit arm. gets cone out of the way of the ground junction and poles, and this needs to be done anyways, so easier sooner rather than later
-                .lineToSplineHeading(new Pose2d(-3,20, Math.toRadians(0)), // these two trajectories strafe the robot close to the tall pole tile, avoiding poles and junctions. They have a reduced speed because without them they're too fast and mess with the localization a bit (the localization means the drive encoders)
+                .lineToSplineHeading(new Pose2d(-1,-20, Math.toRadians(0)), // these two trajectories strafe the robot close to the tall pole tile, avoiding poles and junctions. They have a reduced speed because without them they're too fast and mess with the localization a bit (the localization means the drive encoders)
                         SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .splineToConstantHeading(new Vector2d(-1,-44), Math.toRadians(-90),
@@ -146,7 +146,7 @@ public class LeftSideAutonomous extends LinearOpMode {
                 .lineToSplineHeading(new Pose2d(0, -51, Math.toRadians(0)), // moves to the center of the tall pole tile to avoid hitting the ground junction and turns to the cone stack at a reduced speed because turning messes with localization
                         SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .lineToSplineHeading(new Pose2d(24.5, -51, Math.toRadians(0)), // moves to the cone stack at more of a reduced speed because hitting the wall messes with localization and it's not good for the claw
+                .lineToSplineHeading(new Pose2d(23.5, -51, Math.toRadians(0)), // moves to the cone stack at more of a reduced speed because hitting the wall messes with localization and it's not good for the claw
                         SampleMecanumDrive.getVelocityConstraint(16, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .UNSTABLE_addTemporalMarkerOffset(-0.5,()-> stopLift()) // half a second before reaching the cone stack, stops the lift so that the motors don't push against the cone stack and cause issues
@@ -171,7 +171,7 @@ public class LeftSideAutonomous extends LinearOpMode {
                 .lineToSplineHeading(new Pose2d(0, -51, Math.toRadians(0)), // moves to the center of the tall pole tile to avoid hitting the ground junction and turns to the cone stack at a reduced speed because turning messes with localization
                         SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .lineToSplineHeading(new Pose2d(24.5, -51, Math.toRadians(0)), // moves to the cone stack at more of a reduced speed because hitting the wall messes with localization and it's not good for the claw
+                .lineToSplineHeading(new Pose2d(23.5, -51, Math.toRadians(0)), // moves to the cone stack at more of a reduced speed because hitting the wall messes with localization and it's not good for the claw
                         SampleMecanumDrive.getVelocityConstraint(16, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .UNSTABLE_addTemporalMarkerOffset(-0.5,()-> stopLift()) // half a second before reaching the cone stack, stops the lift so that the motors don't push against the cone stack and cause issues
@@ -191,12 +191,12 @@ public class LeftSideAutonomous extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> claw.setPosition(CLAW_OPEN)) // drops the cone on the pole
                 .build();
         parkingOne = drive.trajectorySequenceBuilder(getConeTwo.end()) // this parks in parking space one from the tall pole and resets the arm and lift
-                .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(10, 50, ROTATE_DOWNSIDE)) // starts resetting the arm and lift, but not rotating the claw so that it doesn't hit the cone or pole
-                .UNSTABLE_addTemporalMarkerOffset(0.4,()-> startLift(10, 50, ROTATE_UPSIDE)) // starts rotating the claw after a delay, avoiding hitting anything with the claw
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(10, 50, ROTATE_DOWNSIDE))
+                .UNSTABLE_addTemporalMarkerOffset(0.4,()-> startLift(10, 50, ROTATE_UPSIDE))
                 .lineToSplineHeading(new Pose2d(0, -50, Math.toRadians(90))) // turns to face the starting wall while moving to the center of the tall pole
                 .waitSeconds(1) // gives the claw time to rotate so it doesn't hit the floor and get damaged if the robot strafes
-                .lineToSplineHeading(new Pose2d(-20, -51, Math.toRadians(90))) // moves to the first parking zone
-                .splineToConstantHeading(new Vector2d(-20,-33), Math.toRadians(90)) // runs forward a little bit
+                .lineToSplineHeading(new Pose2d(21.5, -51, Math.toRadians(90))) // moves to the third parking zone
+                .splineToConstantHeading(new Vector2d(21.5,-33), Math.toRadians(90)) // runs forward a little bit
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> stopLift()) // stops the lifts
                 .build();
         parkingTwo = drive.trajectorySequenceBuilder(getConeTwo.end()) // this parks in parking space two from the tall pole and resets the arm and lift
@@ -207,12 +207,12 @@ public class LeftSideAutonomous extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> stopLift()) // stops the lifts
                 .build();
         parkingThree = drive.trajectorySequenceBuilder(getConeTwo.end()) // this parks in parking space three from the tall pole and resets the arm and lift
-                .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(10, 50, ROTATE_DOWNSIDE))
-                .UNSTABLE_addTemporalMarkerOffset(0.4,()-> startLift(10, 50, ROTATE_UPSIDE))
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(10, 50, ROTATE_DOWNSIDE)) // starts resetting the arm and lift, but not rotating the claw so that it doesn't hit the cone or pole
+                .UNSTABLE_addTemporalMarkerOffset(0.4,()-> startLift(10, 50, ROTATE_UPSIDE)) // starts rotating the claw after a delay, avoiding hitting anything with the claw
                 .lineToSplineHeading(new Pose2d(0, -50, Math.toRadians(90))) // turns to face the starting wall while moving to the center of the tall pole
                 .waitSeconds(1) // gives the claw time to rotate so it doesn't hit the floor and get damaged if the robot strafes
-                .lineToSplineHeading(new Pose2d(21.5, -51, Math.toRadians(90))) // moves to the third parking zone
-                .splineToConstantHeading(new Vector2d(21.5,-33), Math.toRadians(90)) // runs forward a little bit
+                .lineToSplineHeading(new Pose2d(-20, -51, Math.toRadians(90))) // moves to the first parking zone
+                .splineToConstantHeading(new Vector2d(-20,-33), Math.toRadians(90)) // runs forward a little bit
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> stopLift()) // stops the lifts
                 .build();
     }
@@ -275,7 +275,7 @@ public class LeftSideAutonomous extends LinearOpMode {
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
 
-        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "leftCamera"), cameraMonitorViewId);
+        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "rightCamera"), cameraMonitorViewId);
         aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
 
         camera.setPipeline(aprilTagDetectionPipeline);
