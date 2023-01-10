@@ -63,9 +63,10 @@ public class RightSideAutonomous extends LinearOpMode {
 
     private final int TALL = RobotConstants.TALL, MEDIUM = RobotConstants.MEDIUM, LOW = RobotConstants.LOW, CONE_STACK = RobotConstants.CONE_STACK, ARM_FLIPPED = RobotConstants.ARM_FLIPPED, ARM_SHORT = RobotConstants.ARM_SHORT, LIFT_VELOCITY = RobotConstants.LIFT_VELOCITY, ARM_VELOCITY = RobotConstants.ARM_VELOCITY, LIFT_MAXIMUM = RobotConstants.LIFT_MAXIMUM, LIFT_MINIMUM = RobotConstants.LIFT_MINIMUM;
 
-    private Pose2d tallPolePose = new Pose2d(-1, 53.5, Math.toRadians(-45));
+    private Pose2d tallPolePose = new Pose2d(-0.75, 53.25, Math.toRadians(-45));
     private Pose2d tallPolePose2 = new Pose2d(-2.5, 52, Math.toRadians(-45));
-    private Pose2d tallPolePose3 = new Pose2d(-0.5, 52.5, Math.toRadians(-45));
+    private Pose2d tallPolePose3 = new Pose2d(-1.5, 52.5, Math.toRadians(-45));
+    private Pose2d coneStack = new Pose2d(24.5, 53, Math.toRadians(0));
 
     public void autonomous() {
         // this should be pretty self explanatory. For questions on what the trajectory sequences do, see a bit below
@@ -146,7 +147,7 @@ public class RightSideAutonomous extends LinearOpMode {
                 .lineToSplineHeading(new Pose2d(0, 51, Math.toRadians(0)), // moves to the center of the tall pole tile to avoid hitting the ground junction and turns to the cone stack at a reduced speed because turning messes with localization
                         SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .lineToSplineHeading(new Pose2d(24.5, 51, Math.toRadians(0)), // moves to the cone stack at more of a reduced speed because hitting the wall messes with localization and it's not good for the claw
+                .lineToSplineHeading(coneStack, // moves to the cone stack at more of a reduced speed because hitting the wall messes with localization and it's not good for the claw
                         SampleMecanumDrive.getVelocityConstraint(16, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .UNSTABLE_addTemporalMarkerOffset(-0.5,()-> stopLift()) // half a second before reaching the cone stack, stops the lift so that the motors don't push against the cone stack and cause issues
@@ -171,7 +172,7 @@ public class RightSideAutonomous extends LinearOpMode {
                 .lineToSplineHeading(new Pose2d(0, 51, Math.toRadians(0)), // moves to the center of the tall pole tile to avoid hitting the ground junction and turns to the cone stack at a reduced speed because turning messes with localization
                         SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .lineToSplineHeading(new Pose2d(24.5, 51, Math.toRadians(0)), // moves to the cone stack at more of a reduced speed because hitting the wall messes with localization and it's not good for the claw
+                .lineToSplineHeading(coneStack, // moves to the cone stack at more of a reduced speed because hitting the wall messes with localization and it's not good for the claw
                         SampleMecanumDrive.getVelocityConstraint(16, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .UNSTABLE_addTemporalMarkerOffset(-0.5,()-> stopLift()) // half a second before reaching the cone stack, stops the lift so that the motors don't push against the cone stack and cause issues
@@ -204,6 +205,7 @@ public class RightSideAutonomous extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0.5,()-> startLift(10, 50, ROTATE_UPSIDE)) // starts rotating the claw after a delay, avoiding hitting anything with the claw
                 .lineToSplineHeading(new Pose2d(0, 50, Math.toRadians(-90))) // turns to face the starting wall while moving to the center of the tall pole. We don't need to move after this in this trajectory sequence because we're already in parking zone two
                 .splineToConstantHeading(new Vector2d(0,33), Math.toRadians(-90)) // runs forward a little bit
+                .waitSeconds(1.5)
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> stopLift()) // stops the lifts
                 .build();
         parkingThree = drive.trajectorySequenceBuilder(getConeTwo.end()) // this parks in parking space three from the tall pole and resets the arm and lift
