@@ -164,8 +164,8 @@ public class TwoPersonDrive extends LinearOpMode {
                 if (gamepad2.left_trigger>0||gamepad2.right_trigger>0) {
                     leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     rightLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                    leftLift.setPower(-gamepad2.left_trigger/2);
-                    rightLift.setPower(-gamepad2.right_trigger/2);
+                    leftLift.setPower(gamepad2.left_trigger/2);
+                    rightLift.setPower(gamepad2.right_trigger/2);
                     leftLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     rightLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
