@@ -104,7 +104,7 @@ public class TwoPersonDrive extends LinearOpMode {
         while (opModeIsActive())
         {
             double y = gamepad1.left_stick_y; // Remember, this is reversed!
-            double x = -gamepad1.right_trigger+gamepad1.left_trigger;
+            double x = (-gamepad1.right_trigger+gamepad1.left_trigger) * 0.7; // slowing down the turning
             double rx = -gamepad1.left_stick_x * 1; // Counteract imperfect strafing
 
             // Denominator is the largest motor power (absolute value) or 1
@@ -161,7 +161,7 @@ public class TwoPersonDrive extends LinearOpMode {
                     }
                 }
 
-                if (gamepad2.left_trigger>0||gamepad2.right_trigger>0) {
+                if (gamepad2.left_trigger>0||gamepad2.right_trigger>0||gamepad2.left_stick_button) {
                     leftLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     rightLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     leftLift.setPower(gamepad2.left_trigger/2);
