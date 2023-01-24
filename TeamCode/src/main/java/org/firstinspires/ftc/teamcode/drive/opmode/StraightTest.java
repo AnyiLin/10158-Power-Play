@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 public class StraightTest extends LinearOpMode {
 
     public final Telemetry dash = FtcDashboard.getInstance().getTelemetry();
-    public static double DISTANCE = 60; // in
+    public static double DISTANCE = 30; // in
 
     @Override
     public void runOpMode() throws InterruptedException {
