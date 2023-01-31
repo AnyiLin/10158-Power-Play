@@ -104,7 +104,7 @@ public class TwoPersonDrive extends LinearOpMode {
         while (opModeIsActive())
         {
             double y = gamepad1.left_stick_y; // Remember, this is reversed!
-            double x = (-gamepad1.right_trigger+gamepad1.left_trigger) * 0.7; // slowing down the turning
+            double x = (-gamepad1.right_trigger+gamepad1.left_trigger);
             double rx = -gamepad1.left_stick_x * 1; // Counteract imperfect strafing
 
             if (gamepad1.left_bumper&&gamepad1.right_bumper) {
