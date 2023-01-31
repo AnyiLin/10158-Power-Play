@@ -107,6 +107,14 @@ public class TwoPersonDrive extends LinearOpMode {
             double x = (-gamepad1.right_trigger+gamepad1.left_trigger) * 0.7; // slowing down the turning
             double rx = -gamepad1.left_stick_x * 1; // Counteract imperfect strafing
 
+            if (gamepad1.left_bumper&&gamepad1.right_bumper) {
+
+            } else if (gamepad1.left_bumper) {
+                rx = 0.25;
+            } else if (gamepad1.right_bumper) {
+                rx = -0.25;
+            }
+
             // Denominator is the largest motor power (absolute value) or 1
             // This ensures all the powers maintain the same ratio, but only when
             // at least one is out of the range [-1, 1]

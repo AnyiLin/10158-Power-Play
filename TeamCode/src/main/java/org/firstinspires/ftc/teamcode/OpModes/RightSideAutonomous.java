@@ -21,7 +21,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-@Autonomous(name = "Right 1+2 Auto", group = "Autonomous")
+@Autonomous(name = "Right 1+2 Auto", group = "Deprecated")
 public class RightSideAutonomous extends LinearOpMode {
 
     private OpenCvCamera camera;
