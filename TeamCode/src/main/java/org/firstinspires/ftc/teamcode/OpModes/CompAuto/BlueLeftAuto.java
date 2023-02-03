@@ -68,9 +68,9 @@ public class BlueLeftAuto extends LinearOpMode {
     private Pose2d tallPolePose2 = new Pose2d(3, -52.5, Math.toRadians(42));
     private Pose2d tallPolePose3 = new Pose2d(2.5, -52.75, Math.toRadians(42));
     private Pose2d tallPolePose4 = new Pose2d(1, -54.25, Math.toRadians(39));
-    private Pose2d coneStack = new Pose2d(29, -51, Math.toRadians(0));
-    private Pose2d coneStack2 = new Pose2d(29, -49.5, Math.toRadians(0));
-    private Pose2d coneStack3 = new Pose2d(29, -49, Math.toRadians(0));
+    private Pose2d coneStack = new Pose2d(29.5, -50.75, Math.toRadians(0));
+    private Pose2d coneStack2 = new Pose2d(29, -49.25, Math.toRadians(0));
+    private Pose2d coneStack3 = new Pose2d(29, -48.75, Math.toRadians(0));
 
     public void autonomous() {
         // this should be pretty self explanatory. For questions on what the trajectory sequences do, see a bit below

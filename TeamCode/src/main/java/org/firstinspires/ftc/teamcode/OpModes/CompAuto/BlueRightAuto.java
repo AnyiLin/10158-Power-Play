@@ -68,9 +68,9 @@ public class BlueRightAuto extends LinearOpMode {
     private Pose2d tallPolePose2 = new Pose2d(-3, 51, Math.toRadians(-38));
     private Pose2d tallPolePose3 = new Pose2d(-2, 52.5, Math.toRadians(-34));
     private Pose2d tallPolePose4 = new Pose2d(-2, 52.5, Math.toRadians(-36));
-    private Pose2d coneStack = new Pose2d(26, 51.5, Math.toRadians(0));
-    private Pose2d coneStack2 = new Pose2d(27, 51.5, Math.toRadians(0));
-    private Pose2d coneStack3 = new Pose2d(27, 51.5, Math.toRadians(0));
+    private Pose2d coneStack = new Pose2d(26, 51, Math.toRadians(0));
+    private Pose2d coneStack2 = new Pose2d(27, 51, Math.toRadians(0));
+    private Pose2d coneStack3 = new Pose2d(27, 51, Math.toRadians(0));
 
     public void autonomous() {
         // this should be pretty self explanatory. For questions on what the trajectory sequences do, see a bit below
@@ -217,8 +217,8 @@ public class BlueRightAuto extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0.3,()-> startLift(10, 400, ROTATE_UPSIDE)) // starts rotating the claw after a delay, avoiding hitting anything with the claw
                 .lineToSplineHeading(new Pose2d(0, 50, Math.toRadians(-90))) // turns to face the starting wall while moving to the center of the tall pole
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(10, 50, ROTATE_UPSIDE))
-                .lineToSplineHeading(new Pose2d(-23, 51, Math.toRadians(-90))) // moves to the first parking zone
-                .lineToSplineHeading(new Pose2d(-23,33, Math.toRadians(-90))) // runs forward a little bit
+                .lineToSplineHeading(new Pose2d(-24, 51, Math.toRadians(-90))) // moves to the first parking zone
+                .lineToSplineHeading(new Pose2d(-24,33, Math.toRadians(-90))) // runs forward a little bit
                 .waitSeconds(1.5)
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> stopLift()) // stops the lifts
                 .build();
