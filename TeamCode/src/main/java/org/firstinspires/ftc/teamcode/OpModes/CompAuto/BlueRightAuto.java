@@ -64,10 +64,10 @@ public class BlueRightAuto extends LinearOpMode {
 
     private final int TALL = RobotConstants.TALL, MEDIUM = RobotConstants.MEDIUM, LOW = RobotConstants.LOW, CONE_STACK = RobotConstants.CONE_STACK, ARM_FLIPPED = RobotConstants.ARM_FLIPPED, ARM_SHORT = RobotConstants.ARM_SHORT, LIFT_VELOCITY = RobotConstants.LIFT_VELOCITY, ARM_VELOCITY = RobotConstants.ARM_VELOCITY, LIFT_MAXIMUM = RobotConstants.LIFT_MAXIMUM, LIFT_MINIMUM = RobotConstants.LIFT_MINIMUM;
 
-    private Pose2d tallPolePose = new Pose2d(0, 52, Math.toRadians(-45));
-    private Pose2d tallPolePose2 = new Pose2d(-3, 51, Math.toRadians(-38));
-    private Pose2d tallPolePose3 = new Pose2d(-2, 52.5, Math.toRadians(-34));
-    private Pose2d tallPolePose4 = new Pose2d(-2, 52.5, Math.toRadians(-36));
+    private Pose2d tallPolePose = new Pose2d(0, 50.5, Math.toRadians(-45));
+    private Pose2d tallPolePose2 = new Pose2d(-3, 49.5, Math.toRadians(-38));
+    private Pose2d tallPolePose3 = new Pose2d(-2, 51, Math.toRadians(-34));
+    private Pose2d tallPolePose4 = new Pose2d(-2, 51, Math.toRadians(-36));
     private Pose2d coneStack = new Pose2d(26, 51, Math.toRadians(0));
     private Pose2d coneStack2 = new Pose2d(27, 51, Math.toRadians(0));
     private Pose2d coneStack3 = new Pose2d(27, 51, Math.toRadians(0));

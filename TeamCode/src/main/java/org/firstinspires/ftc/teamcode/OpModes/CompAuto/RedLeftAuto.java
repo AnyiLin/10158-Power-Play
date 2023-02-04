@@ -149,7 +149,7 @@ public class RedLeftAuto extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> claw.setPosition(CLAW_CLOSE)) // close claw on cone
                 .waitSeconds(0.3) // give the claw time to close
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(TALL, ARM_FLIPPED-100, ROTATE_DOWNSIDE)) // raise lift up and flit arm. gets cone out of the way of the ground junction and poles, and this needs to be done anyways, so easier sooner rather than later
-                .lineToSplineHeading(new Pose2d(1,-44, Math.toRadians(0)),
+                .lineToLinearHeading(new Pose2d(1,-44, Math.toRadians(0)),
                         SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL+40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL+40))
                 .splineToLinearHeading(tallPolePose, tallPolePose.getHeading())
