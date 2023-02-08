@@ -62,7 +62,7 @@ public class BlueRightAuto extends LinearOpMode {
 
     private final double ROTATE_UPSIDE = RobotConstants.ROTATE_UPSIDE, ROTATE_DOWNSIDE = RobotConstants.ROTATE_DOWNSIDE, CLAW_OPEN = RobotConstants.CLAW_OPEN, CLAW_CLOSE = RobotConstants.CLAW_CLOSE, LIFT_ERROR = RobotConstants.LIFT_ERROR;
 
-    private final int TALL = RobotConstants.TALL, MEDIUM = RobotConstants.MEDIUM, LOW = RobotConstants.LOW, CONE_STACK = RobotConstants.CONE_STACK, ARM_FLIPPED = RobotConstants.ARM_FLIPPED, ARM_SHORT = RobotConstants.ARM_SHORT, LIFT_VELOCITY = RobotConstants.LIFT_VELOCITY, ARM_VELOCITY = RobotConstants.ARM_VELOCITY, LIFT_MAXIMUM = RobotConstants.LIFT_MAXIMUM, LIFT_MINIMUM = RobotConstants.LIFT_MINIMUM;
+    private final int TALL = RobotConstants.TALL, MEDIUM = RobotConstants.MEDIUM, LOW = RobotConstants.LOW, CONE_STACK = RobotConstants.CONE_STACK, CONE_HEIGHT_CHANGE = RobotConstants.CONE_HEIGHT_CHANGE, ARM_FLIPPED = RobotConstants.ARM_FLIPPED, ARM_SHORT = RobotConstants.ARM_SHORT, LIFT_VELOCITY = RobotConstants.LIFT_VELOCITY, ARM_VELOCITY = RobotConstants.ARM_VELOCITY, LIFT_MAXIMUM = RobotConstants.LIFT_MAXIMUM, LIFT_MINIMUM = RobotConstants.LIFT_MINIMUM;
 
     private Pose2d tallPolePose = new Pose2d(-2.5, 50.25, Math.toRadians(-45));
     private Pose2d tallPolePose2 = new Pose2d(-6, 50, Math.toRadians(-38));
@@ -138,7 +138,7 @@ public class BlueRightAuto extends LinearOpMode {
     }
 
     public int getConeStackHeight() {
-        return CONE_STACK - 180 * (5 - conesInStack);
+        return CONE_STACK - CONE_HEIGHT_CHANGE * (5 - conesInStack);
     }
 
     public void buildTrajectories() {
