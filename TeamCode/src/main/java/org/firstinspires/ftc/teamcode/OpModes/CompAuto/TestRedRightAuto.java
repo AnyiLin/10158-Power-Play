@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.OpModes.CompAuto;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.outoftheboxrobotics.photoncore.PhotonCore;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -64,15 +65,15 @@ public class TestRedRightAuto extends LinearOpMode {
 
     private final int TALL = RobotConstants.TALL, MEDIUM = RobotConstants.MEDIUM, LOW = RobotConstants.LOW, CONE_STACK = RobotConstants.CONE_STACK, CONE_HEIGHT_CHANGE = RobotConstants.CONE_HEIGHT_CHANGE, ARM_FLIPPED = RobotConstants.ARM_FLIPPED, ARM_SHORT = RobotConstants.ARM_SHORT, LIFT_VELOCITY = RobotConstants.LIFT_VELOCITY, ARM_VELOCITY = RobotConstants.ARM_VELOCITY, LIFT_MAXIMUM = RobotConstants.LIFT_MAXIMUM, LIFT_MINIMUM = RobotConstants.LIFT_MINIMUM;
 
-    private Pose2d tallPolePose = new Pose2d(0, 52, Math.toRadians(-35));
-    private Pose2d tallPolePose2 = new Pose2d(0, 50, Math.toRadians(-35));
-    private Pose2d tallPolePose3 = new Pose2d(1, 51, Math.toRadians(-35));
-    private Pose2d tallPolePose4 = new Pose2d(1, 52, Math.toRadians(-35));
-    private Pose2d tallPolePose5 = new Pose2d(1.5, 51.5, Math.toRadians(-35));
+    private Pose2d tallPolePose = new Pose2d(-0.5, 52.5, Math.toRadians(-35));
+    private Pose2d tallPolePose2 = new Pose2d(-0.75, 50.75, Math.toRadians(-35));
+    private Pose2d tallPolePose3 = new Pose2d(0.25, 51.75, Math.toRadians(-35));
+    private Pose2d tallPolePose4 = new Pose2d(0.25, 52.25, Math.toRadians(-35));
+    private Pose2d tallPolePose5 = new Pose2d(0.75, 52.25, Math.toRadians(-35));
     private Pose2d coneStack = new Pose2d(23.5, 52, Math.toRadians(0));
-    private Pose2d coneStack2 = new Pose2d(24.25, 51.5, Math.toRadians(0));
-    private Pose2d coneStack3 = new Pose2d(24.75, 51.75, Math.toRadians(0));
-    private Pose2d coneStack4 = new Pose2d(24.75, 52.25, Math.toRadians(0));
+    private Pose2d coneStack2 = new Pose2d(24.25, 52.25, Math.toRadians(0));
+    private Pose2d coneStack3 = new Pose2d(24.75, 52.75, Math.toRadians(0));
+    private Pose2d coneStack4 = new Pose2d(24.75, 53.25, Math.toRadians(0));
 
     private Pose2d between = new Pose2d(12,51, Math.toRadians(0));
 
@@ -205,7 +206,8 @@ public class TestRedRightAuto extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0.3,()-> startLift(getConeStackHeight(), 0, (int)(ARM_VELOCITY*2), ROTATE_UPSIDE)) // starts rotating the claw after a delay, avoiding hitting anything with the claw
                 .splineTo(vectorFromPose(between), between.getHeading())
                 .splineToLinearHeading((coneStack3), coneStack3.getHeading())
-                .UNSTABLE_addTemporalMarkerOffset(-0.5,()-> stopLift()) // half a second before reaching the cone stack, stops the lift so that the motors don't push against the cone stack and cause issues
+                //.UNSTABLE_addTemporalMarkerOffset(-0.5,()-> stopLift()) // half a second before reaching the cone stack, stops the lift so that the motors don't push against the cone stack and cause issues
+                .UNSTABLE_addTemporalMarkerOffset(-0.5,()-> arm.setPower(0))
                 .waitSeconds(0.1)
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> claw.setPosition(CLAW_CLOSE)) // grabs a cone
                 .waitSeconds(0.3) // gives the claw time to close
@@ -224,11 +226,18 @@ public class TestRedRightAuto extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0.3,()-> startLift(getConeStackHeight(), 0, (int)(ARM_VELOCITY*2), ROTATE_UPSIDE)) // starts rotating the claw after a delay, avoiding hitting anything with the claw
                 .splineTo(vectorFromPose(between), between.getHeading())
                 .splineToLinearHeading((coneStack4), coneStack4.getHeading())
-                .UNSTABLE_addTemporalMarkerOffset(-0.5,()-> stopLift()) // half a second before reaching the cone stack, stops the lift so that the motors don't push against the cone stack and cause issues
+                //.UNSTABLE_addTemporalMarkerOffset(-0.5,()-> stopLift()) // half a second before reaching the cone stack, stops the lift so that the motors don't push against the cone stack and cause issues
+                .UNSTABLE_addTemporalMarkerOffset(-0.5,()-> arm.setPower(0))
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> {
+                    telemetry.addData("lift position", liftMotor.getCurrentPosition());
+                    telemetry.addData("target position", liftMotor.getTargetPosition());
+                    telemetry.update();
+                })
                 .waitSeconds(0.1)
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> claw.setPosition(CLAW_CLOSE)) // grabs a cone
                 .waitSeconds(0.3) // gives the claw time to close
-                .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(getConeStackHeight()+800, 0, ROTATE_UPSIDE)) // lifts the cone off of the stack
+                //.UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(getConeStackHeight()+800, 0, ROTATE_UPSIDE)) // lifts the cone off of the stack
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(CONE_STACK+800, 0, ROTATE_UPSIDE)) // lifts the cone off of the stack
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> conesInStack--) // decrements the variable keeping track of the number of cones in the stack
                 .waitSeconds(0.4) // gives the lift time to lift the cone off of the stack
                 .UNSTABLE_addTemporalMarkerOffset(0.5,()-> startLift(TALL, ARM_FLIPPED-100, ROTATE_DOWNSIDE)) // raises the lift and flips the arm after a short delay to avoid hitting the wall with the arm
@@ -275,6 +284,8 @@ public class TestRedRightAuto extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        PhotonCore.enable();
+
         buildTrajectories();
 
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");

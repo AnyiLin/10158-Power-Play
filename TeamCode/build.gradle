@@ -35,4 +35,10 @@ dependencies {
 
     implementation 'org.openftc:apriltag:1.1.0'
 
+    implementation 'com.github.Eeshwar-Krishnan:PhotonFTC:v2.0.4'
+
+}
+
+repositories {
+    maven { url = 'https://jitpack.io' }
 }
