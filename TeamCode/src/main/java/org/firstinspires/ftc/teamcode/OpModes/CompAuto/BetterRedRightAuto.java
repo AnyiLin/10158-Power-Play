@@ -13,7 +13,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Hardware.Sensors.Camera.OpenCV.VisionPipelines.AprilTagDetectionPipeline;
 import org.firstinspires.ftc.teamcode.OpModes.RobotConstants;
-import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.openftc.apriltag.AprilTagDetection;
@@ -24,7 +23,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 @Autonomous(name = "TEST Red Right 1+4 Autonomous", group = "Autonomous")
-public class TestRedRightAuto extends LinearOpMode {
+public class BetterRedRightAuto extends LinearOpMode {
 
     private OpenCvCamera camera;
     private AprilTagDetectionPipeline aprilTagDetectionPipeline;
@@ -66,14 +65,14 @@ public class TestRedRightAuto extends LinearOpMode {
     private final int TALL = RobotConstants.TALL, MEDIUM = RobotConstants.MEDIUM, LOW = RobotConstants.LOW, CONE_STACK = RobotConstants.CONE_STACK, CONE_HEIGHT_CHANGE = RobotConstants.CONE_HEIGHT_CHANGE, ARM_FLIPPED = RobotConstants.ARM_FLIPPED, ARM_SHORT = RobotConstants.ARM_SHORT, LIFT_VELOCITY = RobotConstants.LIFT_VELOCITY, ARM_VELOCITY = RobotConstants.ARM_VELOCITY, LIFT_MAXIMUM = RobotConstants.LIFT_MAXIMUM, LIFT_MINIMUM = RobotConstants.LIFT_MINIMUM;
 
     private Pose2d tallPolePose = new Pose2d(-0.5, 52.5, Math.toRadians(-35));
-    private Pose2d tallPolePose2 = new Pose2d(0.25, 51.75, Math.toRadians(-35));
+    private Pose2d tallPolePose2 = new Pose2d(-0.25, 52.25, Math.toRadians(-35));
     private Pose2d tallPolePose3 = new Pose2d(0.25, 51.75, Math.toRadians(-35));
     private Pose2d tallPolePose4 = new Pose2d(0.75, 51.75, Math.toRadians(-35));
     private Pose2d tallPolePose5 = new Pose2d(1.25, 51.75, Math.toRadians(-35));
     private Pose2d coneStack = new Pose2d(23.5, 52, Math.toRadians(0));
     private Pose2d coneStack2 = new Pose2d(24.25, 52.25, Math.toRadians(0));
-    private Pose2d coneStack3 = new Pose2d(24.75, 52.75, Math.toRadians(0));
-    private Pose2d coneStack4 = new Pose2d(24.75, 53.25, Math.toRadians(0));
+    private Pose2d coneStack3 = new Pose2d(24.75, 52.50, Math.toRadians(0));
+    private Pose2d coneStack4 = new Pose2d(24.75, 52.50, Math.toRadians(0));
 
     private Pose2d between = new Pose2d(12,51, Math.toRadians(0));
 
@@ -253,8 +252,8 @@ public class TestRedRightAuto extends LinearOpMode {
         parkingOne = drive.trajectorySequenceBuilder(getConeFour.end()) // this parks in parking space one from the tall pole and resets the arm and lift
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(10, 600, ROTATE_DOWNSIDE)) // starts resetting the arm and lift, but not rotating the claw so that it doesn't hit the cone or pole
                 .UNSTABLE_addTemporalMarkerOffset(0.3,()-> startLift(10, 600, ROTATE_UPSIDE)) // starts rotating the claw after a delay, avoiding hitting anything with the claw
-                .lineToSplineHeading(new Pose2d(0, 50, Math.toRadians(-90))) // turns to face the starting wall while moving to the center of the tall pole
-                .lineToSplineHeading(new Pose2d(-25, 51, Math.toRadians(-90))) // moves to the first parking zone
+                .lineToSplineHeading(new Pose2d(0, 51, Math.toRadians(-90))) // turns to face the starting wall while moving to the center of the tall pole
+                .lineToSplineHeading(new Pose2d(-25, 53, Math.toRadians(-90))) // moves to the first parking zone
                 .UNSTABLE_addTemporalMarkerOffset(-0.3,()-> startLift(10, 50, (int)(ARM_VELOCITY*1.2), ROTATE_UPSIDE))
                 .lineToSplineHeading(new Pose2d(-25,33, Math.toRadians(-90))) // runs forward a little bit
                 .waitSeconds(1.5)
