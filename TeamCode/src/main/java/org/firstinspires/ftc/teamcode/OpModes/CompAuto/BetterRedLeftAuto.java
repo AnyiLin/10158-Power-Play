@@ -22,8 +22,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-@Autonomous(name = "Better Red Right 1+4 Autonomous", group = "Autonomous")
-public class BetterRedRightAuto extends LinearOpMode {
+@Autonomous(name = "Better Red Left  1+4 Autonomous", group = "Autonomous")
+public class BetterRedLeftAuto extends LinearOpMode {
 
     private OpenCvCamera camera;
     private AprilTagDetectionPipeline aprilTagDetectionPipeline;
@@ -64,17 +64,17 @@ public class BetterRedRightAuto extends LinearOpMode {
 
     private final int TALL = RobotConstants.TALL, MEDIUM = RobotConstants.MEDIUM, LOW = RobotConstants.LOW, CONE_STACK = RobotConstants.CONE_STACK, CONE_HEIGHT_CHANGE = RobotConstants.CONE_HEIGHT_CHANGE, ARM_FLIPPED = RobotConstants.ARM_FLIPPED, ARM_SHORT = RobotConstants.ARM_SHORT, LIFT_VELOCITY = RobotConstants.LIFT_VELOCITY, ARM_VELOCITY = RobotConstants.ARM_VELOCITY, LIFT_MAXIMUM = RobotConstants.LIFT_MAXIMUM, LIFT_MINIMUM = RobotConstants.LIFT_MINIMUM;
 
-    private Pose2d tallPolePose = new Pose2d(-0.5, 52.5, Math.toRadians(-35));
-    private Pose2d tallPolePose2 = new Pose2d(-0.25, 52.25, Math.toRadians(-35));
-    private Pose2d tallPolePose3 = new Pose2d(0.25, 51.75, Math.toRadians(-35));
-    private Pose2d tallPolePose4 = new Pose2d(0.75, 51.75, Math.toRadians(-35));
-    private Pose2d tallPolePose5 = new Pose2d(1.25, 51.75, Math.toRadians(-35));
-    private Pose2d coneStack = new Pose2d(23.5, 52, Math.toRadians(0));
-    private Pose2d coneStack2 = new Pose2d(24.25, 52.25, Math.toRadians(0));
-    private Pose2d coneStack3 = new Pose2d(24.75, 52.50, Math.toRadians(0));
-    private Pose2d coneStack4 = new Pose2d(24.75, 52.50, Math.toRadians(0));
+    private Pose2d tallPolePose = new Pose2d(-0.5, -52.5, Math.toRadians(35));
+    private Pose2d tallPolePose2 = new Pose2d(-0.25, -52.25, Math.toRadians(35));
+    private Pose2d tallPolePose3 = new Pose2d(0.25, -51.75, Math.toRadians(35));
+    private Pose2d tallPolePose4 = new Pose2d(0.75, -51.75, Math.toRadians(35));
+    private Pose2d tallPolePose5 = new Pose2d(1.25, -51.75, Math.toRadians(35));
+    private Pose2d coneStack = new Pose2d(23.5, -52, Math.toRadians(0));
+    private Pose2d coneStack2 = new Pose2d(24.25, -52.25, Math.toRadians(0));
+    private Pose2d coneStack3 = new Pose2d(24.75, -52.50, Math.toRadians(0));
+    private Pose2d coneStack4 = new Pose2d(24.75, -52.50, Math.toRadians(0));
 
-    private Pose2d between = new Pose2d(12,51, Math.toRadians(0));
+    private Pose2d between = new Pose2d(12,-51, Math.toRadians(0));
 
     public void autonomous() {
         // this should be pretty self explanatory. For questions on what the trajectory sequences do, see a bit below
@@ -90,14 +90,14 @@ public class BetterRedRightAuto extends LinearOpMode {
 
         switch (positionToGo) {
             case 1:
-                drive.followTrajectorySequence(parkingOne);
+                //drive.followTrajectorySequence(parkingOne);
+                drive.followTrajectorySequence(parkingCone);
                 break;
             case 2:
                 drive.followTrajectorySequence(parkingTwo);
                 break;
             case 3:
-                //drive.followTrajectorySequence(parkingThree);
-                drive.followTrajectorySequence(parkingCone);
+                drive.followTrajectorySequence(parkingThree);
                 break;
         }
     }
@@ -156,7 +156,7 @@ public class BetterRedRightAuto extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> claw.setPosition(CLAW_CLOSE)) // close claw on cone
                 .waitSeconds(0.3) // give the claw time to close
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(TALL, ARM_FLIPPED-100, ROTATE_DOWNSIDE)) // raise lift up and flit arm. gets cone out of the way of the ground junction and poles, and this needs to be done anyways, so easier sooner rather than later
-                .lineToSplineHeading(new Pose2d(-1,44, Math.toRadians(0)))
+                .lineToSplineHeading(new Pose2d(-1,-44, Math.toRadians(0)))
                 .splineToLinearHeading(tallPolePose, tallPolePose.getHeading())
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(TALL, ARM_FLIPPED+300, ROTATE_DOWNSIDE)) // dunks the cone on the pole
                 .waitSeconds(0.2) // gives the arm time to lower
@@ -250,31 +250,31 @@ public class BetterRedRightAuto extends LinearOpMode {
                 .waitSeconds(2)
                 .build();
         parkingOne = drive.trajectorySequenceBuilder(getConeFour.end()) // this parks in parking space one from the tall pole and resets the arm and lift
-                .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(10, 600, ROTATE_DOWNSIDE)) // starts resetting the arm and lift, but not rotating the claw so that it doesn't hit the cone or pole
-                .UNSTABLE_addTemporalMarkerOffset(0.3,()-> startLift(10, 600, ROTATE_UPSIDE)) // starts rotating the claw after a delay, avoiding hitting anything with the claw
-                .lineToSplineHeading(new Pose2d(0, 51, Math.toRadians(-90))) // turns to face the starting wall while moving to the center of the tall pole
-                .lineToSplineHeading(new Pose2d(-25, 53, Math.toRadians(-90))) // moves to the first parking zone
-                .UNSTABLE_addTemporalMarkerOffset(-0.3,()-> startLift(10, 50, (int)(ARM_VELOCITY*1.2), ROTATE_UPSIDE))
-                .lineToSplineHeading(new Pose2d(-25,33, Math.toRadians(-90))) // runs forward a little bit
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(10, 600, ROTATE_DOWNSIDE))
+                .UNSTABLE_addTemporalMarkerOffset(0.3,()-> startLift(10, 600, ROTATE_UPSIDE))
+                .lineToSplineHeading(new Pose2d(0, -50, Math.toRadians(90))) // turns to face the starting wall while moving to the center of the tall pole
+                .lineToSplineHeading(new Pose2d(23.75, -51.5, Math.toRadians(90))) // moves to the third parking zone
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(10, 50, (int)(ARM_VELOCITY*1.2), ROTATE_UPSIDE))
+                .lineToSplineHeading(new Pose2d(24.5,-33, Math.toRadians(90))) // runs forward a little bit
                 .waitSeconds(1.5)
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> stopLift()) // stops the lifts
                 .build();
         parkingTwo = drive.trajectorySequenceBuilder(getConeFour.end()) // this parks in parking space two from the tall pole and resets the arm and lift
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(10, 400, ROTATE_DOWNSIDE)) // starts resetting the arm and lift, but not rotating the claw so that it doesn't hit the cone or pole
                 .UNSTABLE_addTemporalMarkerOffset(0.3,()-> startLift(10, 400, ROTATE_UPSIDE)) // starts rotating the claw after a delay, avoiding hitting anything with the claw
-                .lineToSplineHeading(new Pose2d(-1.5001, 50, Math.toRadians(-90))) // turns to face the starting wall while moving to the center of the tall pole. We don't need to move after this in this trajectory sequence because we're already in parking zone two
+                .lineToSplineHeading(new Pose2d(-1.5001, -50, Math.toRadians(90))) // turns to face the starting wall while moving to the center of the tall pole. We don't need to move after this in this trajectory sequence because we're already in parking zone two
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(10, 50, ROTATE_UPSIDE))
-                .splineToConstantHeading(new Vector2d(-1.5,33), Math.toRadians(-90)) // runs forward a little bit
+                .splineToConstantHeading(new Vector2d(-1.5,-33), Math.toRadians(90)) // runs forward a little bit
                 .waitSeconds(1.5)
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> stopLift()) // stops the lifts
                 .build();
         parkingThree = drive.trajectorySequenceBuilder(getConeFour.end()) // this parks in parking space three from the tall pole and resets the arm and lift
-                .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(10, 600, ROTATE_DOWNSIDE))
-                .UNSTABLE_addTemporalMarkerOffset(0.3,()-> startLift(10, 600, ROTATE_UPSIDE))
-                .lineToSplineHeading(new Pose2d(0, 50, Math.toRadians(-90))) // turns to face the starting wall while moving to the center of the tall pole
-                .lineToSplineHeading(new Pose2d(23.75, 51.5, Math.toRadians(-90))) // moves to the third parking zone
-                .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(10, 50, (int)(ARM_VELOCITY*1.2), ROTATE_UPSIDE))
-                .lineToSplineHeading(new Pose2d(24.5,33, Math.toRadians(-90))) // runs forward a little bit
+                .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(10, 600, ROTATE_DOWNSIDE)) // starts resetting the arm and lift, but not rotating the claw so that it doesn't hit the cone or pole
+                .UNSTABLE_addTemporalMarkerOffset(0.3,()-> startLift(10, 600, ROTATE_UPSIDE)) // starts rotating the claw after a delay, avoiding hitting anything with the claw
+                .lineToSplineHeading(new Pose2d(0, -51, Math.toRadians(90))) // turns to face the starting wall while moving to the center of the tall pole
+                .lineToSplineHeading(new Pose2d(-25, -53, Math.toRadians(90))) // moves to the first parking zone
+                .UNSTABLE_addTemporalMarkerOffset(-0.3,()-> startLift(10, 50, (int)(ARM_VELOCITY*1.2), ROTATE_UPSIDE))
+                .lineToSplineHeading(new Pose2d(-25,33, Math.toRadians(90))) // runs forward a little bit
                 .waitSeconds(1.5)
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> stopLift()) // stops the lifts
                 .build();
