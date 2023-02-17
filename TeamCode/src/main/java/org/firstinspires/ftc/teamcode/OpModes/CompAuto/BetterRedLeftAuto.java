@@ -68,11 +68,11 @@ public class BetterRedLeftAuto extends LinearOpMode {
     private Pose2d tallPolePose2 = new Pose2d(4.75, -52.25, Math.toRadians(35));
     private Pose2d tallPolePose3 = new Pose2d(4.25, -51.75, Math.toRadians(35));
     private Pose2d tallPolePose4 = new Pose2d(4.75, -51.75, Math.toRadians(35));
-    private Pose2d tallPolePose5 = new Pose2d(5.25, -51.75, Math.toRadians(35));
-    private Pose2d coneStack = new Pose2d(29.5, -50, Math.toRadians(0));
-    private Pose2d coneStack2 = new Pose2d(29.25, -49.25, Math.toRadians(0));
-    private Pose2d coneStack3 = new Pose2d(28.25, -47.50, Math.toRadians(0));
-    private Pose2d coneStack4 = new Pose2d(27.75, -46.50, Math.toRadians(0));
+    private Pose2d tallPolePose5 = new Pose2d(4.75, -51.25, Math.toRadians(35));
+    private Pose2d coneStack = new Pose2d(29, -50.25, Math.toRadians(0));
+    private Pose2d coneStack2 = new Pose2d(28.5, -49.5, Math.toRadians(0));
+    private Pose2d coneStack3 = new Pose2d(27.5, -47.75, Math.toRadians(0));
+    private Pose2d coneStack4 = new Pose2d(26.5, -47.25, Math.toRadians(0));
 
     private Pose2d between = new Pose2d(12,-49, Math.toRadians(0));
 
@@ -272,7 +272,7 @@ public class BetterRedLeftAuto extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(10, 600, ROTATE_DOWNSIDE)) // starts resetting the arm and lift, but not rotating the claw so that it doesn't hit the cone or pole
                 .UNSTABLE_addTemporalMarkerOffset(0.3,()-> startLift(10, 600, ROTATE_UPSIDE)) // starts rotating the claw after a delay, avoiding hitting anything with the claw
                 .lineToSplineHeading(new Pose2d(0, -51, Math.toRadians(90))) // turns to face the starting wall while moving to the center of the tall pole
-                .lineToSplineHeading(new Pose2d(-25, -53, Math.toRadians(90))) // moves to the first parking zone
+                .lineToSplineHeading(new Pose2d(-25, -51.5, Math.toRadians(90))) // moves to the first parking zone
                 .UNSTABLE_addTemporalMarkerOffset(-0.3,()-> startLift(10, 50, (int)(ARM_VELOCITY*1.2), ROTATE_UPSIDE))
                 .lineToSplineHeading(new Pose2d(-25,33, Math.toRadians(90))) // runs forward a little bit
                 .waitSeconds(1.5)
