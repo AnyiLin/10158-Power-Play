@@ -152,7 +152,7 @@ public class BetterRedRightAuto extends LinearOpMode {
         drive = new SampleMecanumDrive(hardwareMap);
 
         initialDrive = drive.trajectorySequenceBuilder(new Pose2d()) // this does the starting drive to the tall pole and scores the cone
-                .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(150, 0, ROTATE_UPSIDE)) // lift arm up to grab cone
+                //.UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(150, 0, ROTATE_UPSIDE)) // lift arm up to grab cone
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> claw.setPosition(CLAW_CLOSE)) // close claw on cone
                 .waitSeconds(0.3) // give the claw time to close
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(TALL, ARM_FLIPPED-100, ROTATE_DOWNSIDE)) // raise lift up and flit arm. gets cone out of the way of the ground junction and poles, and this needs to be done anyways, so easier sooner rather than later

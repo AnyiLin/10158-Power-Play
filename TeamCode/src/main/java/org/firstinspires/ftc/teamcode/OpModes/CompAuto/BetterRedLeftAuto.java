@@ -64,7 +64,7 @@ public class BetterRedLeftAuto extends LinearOpMode {
 
     private final int TALL = RobotConstants.TALL, MEDIUM = RobotConstants.MEDIUM, LOW = RobotConstants.LOW, CONE_STACK = RobotConstants.CONE_STACK, CONE_HEIGHT_CHANGE = RobotConstants.CONE_HEIGHT_CHANGE, ARM_FLIPPED = RobotConstants.ARM_FLIPPED, ARM_SHORT = RobotConstants.ARM_SHORT, LIFT_VELOCITY = RobotConstants.LIFT_VELOCITY, ARM_VELOCITY = RobotConstants.ARM_VELOCITY, LIFT_MAXIMUM = RobotConstants.LIFT_MAXIMUM, LIFT_MINIMUM = RobotConstants.LIFT_MINIMUM;
 
-    private Pose2d tallPolePose = new Pose2d(7, -54.5, Math.toRadians(35));
+    private Pose2d tallPolePose = new Pose2d(6, -54, Math.toRadians(35));
     private Pose2d tallPolePose2 = new Pose2d(4.75, -52.25, Math.toRadians(35));
     private Pose2d tallPolePose3 = new Pose2d(4.25, -51.75, Math.toRadians(35));
     private Pose2d tallPolePose4 = new Pose2d(4.75, -51.75, Math.toRadians(35));
@@ -74,7 +74,7 @@ public class BetterRedLeftAuto extends LinearOpMode {
     private Pose2d coneStack3 = new Pose2d(27.5, -47.75, Math.toRadians(0));
     private Pose2d coneStack4 = new Pose2d(26.5, -47.25, Math.toRadians(0));
 
-    private Pose2d between = new Pose2d(12,-49, Math.toRadians(0));
+    private Pose2d between = new Pose2d(12,-48.5, Math.toRadians(0));
 
     public void autonomous() {
         // this should be pretty self explanatory. For questions on what the trajectory sequences do, see a bit below
@@ -152,7 +152,7 @@ public class BetterRedLeftAuto extends LinearOpMode {
         drive = new SampleMecanumDrive(hardwareMap);
 
         initialDrive = drive.trajectorySequenceBuilder(new Pose2d()) // this does the starting drive to the tall pole and scores the cone
-                .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(150, 0, ROTATE_UPSIDE)) // lift arm up to grab cone
+                //.UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(150, 0, ROTATE_UPSIDE)) // lift arm up to grab cone
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> claw.setPosition(CLAW_CLOSE)) // close claw on cone
                 .waitSeconds(0.3) // give the claw time to close
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(TALL, ARM_FLIPPED-100, ROTATE_DOWNSIDE)) // raise lift up and flit arm. gets cone out of the way of the ground junction and poles, and this needs to be done anyways, so easier sooner rather than later
