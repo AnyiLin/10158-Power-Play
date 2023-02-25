@@ -13,7 +13,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Hardware.Sensors.Camera.OpenCV.VisionPipelines.AprilTagDetectionPipeline;
 import org.firstinspires.ftc.teamcode.OpModes.RobotConstants;
-import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.openftc.apriltag.AprilTagDetection;
@@ -23,8 +22,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-@Autonomous(name = "Better Red Right 1+4 Autonomous", group = "Autonomous")
-public class BetterRedRightAuto extends LinearOpMode {
+@Autonomous(name = "Better Blue Right 1+4 Autonomous", group = "Autonomous")
+public class BetterBlueRightAuto extends LinearOpMode {
 
     private OpenCvCamera camera;
     private AprilTagDetectionPipeline aprilTagDetectionPipeline;
