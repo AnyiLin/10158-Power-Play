@@ -23,7 +23,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import java.util.ArrayList;
 
 @Autonomous(name = "Better Blue Left  1+4 Autonomous", group = "Autonomous")
-public class BetterBlueLeftAuto extends LinearOpMode {
+public class BetterBlueLeftAutoNOTTUNED extends LinearOpMode {
 
     private OpenCvCamera camera;
     private AprilTagDetectionPipeline aprilTagDetectionPipeline;
@@ -64,14 +64,14 @@ public class BetterBlueLeftAuto extends LinearOpMode {
 
     private final int TALL = RobotConstants.TALL, MEDIUM = RobotConstants.MEDIUM, LOW = RobotConstants.LOW, CONE_STACK = RobotConstants.CONE_STACK, CONE_HEIGHT_CHANGE = RobotConstants.CONE_HEIGHT_CHANGE, ARM_FLIPPED = RobotConstants.ARM_FLIPPED, ARM_SHORT = RobotConstants.ARM_SHORT, LIFT_VELOCITY = RobotConstants.LIFT_VELOCITY, ARM_VELOCITY = RobotConstants.ARM_VELOCITY, LIFT_MAXIMUM = RobotConstants.LIFT_MAXIMUM, LIFT_MINIMUM = RobotConstants.LIFT_MINIMUM;
 
-    private Pose2d tallPolePose = new Pose2d(7, -54, Math.toRadians(35));
-    private Pose2d tallPolePose2 = new Pose2d(5.75, -52.25, Math.toRadians(35));
-    private Pose2d tallPolePose3 = new Pose2d(5.25, -51.75, Math.toRadians(35));
-    private Pose2d tallPolePose4 = new Pose2d(5.75, -51.75, Math.toRadians(35));
-    private Pose2d tallPolePose5 = new Pose2d(5.75, -51.25, Math.toRadians(35));
+    private Pose2d tallPolePose = new Pose2d(4.5, -54, Math.toRadians(35));
+    private Pose2d tallPolePose2 = new Pose2d(5, -52.25, Math.toRadians(35));
+    private Pose2d tallPolePose3 = new Pose2d(4, -52.25, Math.toRadians(35));
+    private Pose2d tallPolePose4 = new Pose2d(4.5, -51, Math.toRadians(35));
+    private Pose2d tallPolePose5 = new Pose2d(4.5, -50.75, Math.toRadians(35));
     private Pose2d coneStack = new Pose2d(27.75, -50.75, Math.toRadians(0));
-    private Pose2d coneStack2 = new Pose2d(27.25, -49.75, Math.toRadians(0));
-    private Pose2d coneStack3 = new Pose2d(26.25, -48.25, Math.toRadians(0));
+    private Pose2d coneStack2 = new Pose2d(27.5, -49.75, Math.toRadians(0));
+    private Pose2d coneStack3 = new Pose2d(26.5, -48.25, Math.toRadians(0));
     private Pose2d coneStack4 = new Pose2d(25.25, -47.75, Math.toRadians(0));
 
     private Pose2d between = new Pose2d(12,-48.25, Math.toRadians(0));

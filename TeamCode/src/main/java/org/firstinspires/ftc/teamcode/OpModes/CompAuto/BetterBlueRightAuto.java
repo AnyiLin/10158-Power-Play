@@ -64,15 +64,15 @@ public class BetterBlueRightAuto extends LinearOpMode {
 
     private final int TALL = RobotConstants.TALL, MEDIUM = RobotConstants.MEDIUM, LOW = RobotConstants.LOW, CONE_STACK = RobotConstants.CONE_STACK, CONE_HEIGHT_CHANGE = RobotConstants.CONE_HEIGHT_CHANGE, ARM_FLIPPED = RobotConstants.ARM_FLIPPED, ARM_SHORT = RobotConstants.ARM_SHORT, LIFT_VELOCITY = RobotConstants.LIFT_VELOCITY, ARM_VELOCITY = RobotConstants.ARM_VELOCITY, LIFT_MAXIMUM = RobotConstants.LIFT_MAXIMUM, LIFT_MINIMUM = RobotConstants.LIFT_MINIMUM;
 
-    private Pose2d tallPolePose = new Pose2d(-2, 52, Math.toRadians(-35));
-    private Pose2d tallPolePose2 = new Pose2d(-2.75, 52.75, Math.toRadians(-35));
-    private Pose2d tallPolePose3 = new Pose2d(-1.25, 52.25, Math.toRadians(-35));
-    private Pose2d tallPolePose4 = new Pose2d(-0.75, 52, Math.toRadians(-35));
-    private Pose2d tallPolePose5 = new Pose2d(-0.5, 52.25, Math.toRadians(-35));
-    private Pose2d coneStack = new Pose2d(22, 51.75, Math.toRadians(0));
-    private Pose2d coneStack2 = new Pose2d(21.75, 52, Math.toRadians(0));
-    private Pose2d coneStack3 = new Pose2d(22, 52.5, Math.toRadians(0));
-    private Pose2d coneStack4 = new Pose2d(22.25, 52.5, Math.toRadians(0));
+    private Pose2d tallPolePose = new Pose2d(-4.25, 53.25, Math.toRadians(-35));
+    private Pose2d tallPolePose2 = new Pose2d(-5.25, 52.25, Math.toRadians(-35));
+    private Pose2d tallPolePose3 = new Pose2d(-4.25, 52.75, Math.toRadians(-35));
+    private Pose2d tallPolePose4 = new Pose2d(-4.5, 52, Math.toRadians(-35));
+    private Pose2d tallPolePose5 = new Pose2d(-3.57, 52.25, Math.toRadians(-35));
+    private Pose2d coneStack = new Pose2d(19.85, 51.5, Math.toRadians(0));
+    private Pose2d coneStack2 = new Pose2d(20, 51.75, Math.toRadians(0));
+    private Pose2d coneStack3 = new Pose2d(20, 52.25, Math.toRadians(0));
+    private Pose2d coneStack4 = new Pose2d(20.5, 52.25, Math.toRadians(0));
 
     private Pose2d between = new Pose2d(12,51.5, Math.toRadians(0));
 
@@ -211,7 +211,7 @@ public class BetterBlueRightAuto extends LinearOpMode {
                 .splineToLinearHeading((coneStack3), coneStack3.getHeading())
                 //.UNSTABLE_addTemporalMarkerOffset(-0.5,()-> stopLift()) // half a second before reaching the cone stack, stops the lift so that the motors don't push against the cone stack and cause issues
                 .UNSTABLE_addTemporalMarkerOffset(-0.5,()-> arm.setPower(0))
-                .waitSeconds(0.1)
+                .waitSeconds(0.2)
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> claw.setPosition(CLAW_CLOSE)) // grabs a cone
                 .waitSeconds(0.3) // gives the claw time to close
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(getConeStackHeight()+800, 0, ROTATE_UPSIDE)) // lifts the cone off of the stack
@@ -231,7 +231,7 @@ public class BetterBlueRightAuto extends LinearOpMode {
                 .lineToSplineHeading(between)
                 .splineToLinearHeading((coneStack4), coneStack4.getHeading())
                 //.UNSTABLE_addTemporalMarkerOffset(-0.5,()-> stopLift()) // half a second before reaching the cone stack, stops the lift so that the motors don't push against the cone stack and cause issues
-                .waitSeconds(0.1)
+                .waitSeconds(0.2)
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> claw.setPosition(CLAW_CLOSE)) // grabs a cone
                 .waitSeconds(0.3) // gives the claw time to close
                 //.UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(getConeStackHeight()+800, 0, ROTATE_UPSIDE)) // lifts the cone off of the stack
@@ -259,9 +259,9 @@ public class BetterBlueRightAuto extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(10, 600, ROTATE_DOWNSIDE)) // starts resetting the arm and lift, but not rotating the claw so that it doesn't hit the cone or pole
                 .UNSTABLE_addTemporalMarkerOffset(0.3,()-> startLift(10, 600, ROTATE_UPSIDE)) // starts rotating the claw after a delay, avoiding hitting anything with the claw
                 .lineToSplineHeading(new Pose2d(0, 51, Math.toRadians(-90))) // turns to face the starting wall while moving to the center of the tall pole
-                .lineToSplineHeading(new Pose2d(-25, 53, Math.toRadians(-90))) // moves to the first parking zone
+                .lineToSplineHeading(new Pose2d(-26.5, 53, Math.toRadians(-90))) // moves to the first parking zone
                 .UNSTABLE_addTemporalMarkerOffset(-0.3,()-> startLift(10, 50, (int)(ARM_VELOCITY*1.5), ROTATE_UPSIDE))
-                .lineToSplineHeading(new Pose2d(-24,33, Math.toRadians(-90))) // runs forward a little bit
+                .lineToSplineHeading(new Pose2d(-25.5,33, Math.toRadians(-90))) // runs forward a little bit
                 .waitSeconds(1.5)
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> stopLift()) // stops the lifts
                 .build();
@@ -271,7 +271,7 @@ public class BetterBlueRightAuto extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0.3,()-> startLift(10, 400, ROTATE_UPSIDE)) // starts rotating the claw after a delay, avoiding hitting anything with the claw
                 .lineToSplineHeading(new Pose2d(-1.5001, 50, Math.toRadians(-90))) // turns to face the starting wall while moving to the center of the tall pole. We don't need to move after this in this trajectory sequence because we're already in parking zone two
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> startLift(10, 50, (int)(ARM_VELOCITY*1.5), ROTATE_UPSIDE))
-                .splineToConstantHeading(new Vector2d(-1.5,33), Math.toRadians(-90)) // runs forward a little bit
+                .lineToConstantHeading(new Vector2d(-1.5,33))//, Math.toRadians(-90)) // runs forward a little bit
                 .waitSeconds(1.5)
                 .UNSTABLE_addTemporalMarkerOffset(0,()-> stopLift()) // stops the lifts
                 .build();
